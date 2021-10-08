@@ -16,7 +16,7 @@ class Customer:
         super().__init__()
         
     def login(self, userid, password):
-        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db='version2',
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select password from customer where id = '%s'" % userid
@@ -125,4 +125,4 @@ class Customer:
         
 
 #Customer().registration("03", "1221")
-print(Customer().C_categories_Search("Lights", {}, "12"))
+#print(Customer().C_categories_Search("Lights", {}, "12"))
