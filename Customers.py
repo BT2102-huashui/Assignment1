@@ -1,22 +1,16 @@
-import os
-import sys
-sys.path.append(os.getcwd())
 import pymysql
 import pymongo
-from dotenv import load_dotenv
+import json
+import pprint
 from Mongodbdata import loadMongoDb
-load_dotenv()
-MY_SQL_PASSWORD = os.getenv('MY_SQL_PASSWORD')
-SQL_FILE = os.getenv('SQL_FILE')
-DB_NAME = os.getenv('DB_NAME')
-USERNAME = os.getenv('USERNAME')
+mysql_password = "ur password"
 
 class Customer:
     def __init__(self) -> None:
         super().__init__()
         
     def login(self, userid, password):
-        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+        conn = pymysql.connect(host='localhost', port=3306, user='root', password=mysql_password, db='version2',
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select password from customer where id = '%s'" % userid
@@ -35,8 +29,8 @@ class Customer:
             cursor.close()
             return ("Wrong password", False)
 
-    def registration(self, userid, password, name, gender, number, address, email):
-        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+    def registration(self, userid, password):
+        conn = pymysql.connect(host='localhost', port=3306, user='root', password=mysql_password, db='version2',
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select * from customer where id = '%s'" % userid
@@ -47,11 +41,7 @@ class Customer:
             cursor.close()
             return ("User ID exists, please enter a new username.", False)
         elif password != "" and userid != "":
-            sql = """
-            INSERT INTO customer(id, password, name, gender, phone_number, address, email_address) 
-            VALUES({}, '{}', '{}', '{}', '{}', '{}', '{}')
-            """
-            sql = sql.format(userid, password, name, gender, number, address, email)
+            sql = "insert into customer(id, password) values" + "(" + userid + ", '" + password + "')"
             cursor.execute(sql)
             conn.commit()
             conn.close()
@@ -189,5 +179,4 @@ class Customer:
 
 #Customer().registration("03", "1221")
 #print(Customer().C_categories_Search("Lights", {}))
-print(Customer().purchase({"Color": "White"}))
-
+#print(Customer().purchase({"Color": "White"}))

@@ -41,20 +41,21 @@ class Login_Admin_Page(tk.Toplevel):
         result = Administrator().login(userid, password)
         if result[1]:
             messagebox.showinfo("showinfo", result[0])
-            self.call_search()
+            self.call_search(userid)
         else:
             messagebox.showinfo("showinfo", result[0])
             self.usrentry.delete(0, tk.END)
             self.passentry.delete(0, tk.END)
         
 
-    def call_search(self):
+    def call_search(self, userid):
         self.clear_widgets()
-        Search_Admin_Page(self)
+        Search_Admin_Page(self, userid)
 
     def clear_widgets(self):
         for widget in self.winfo_children():
             widget.destroy()
+        
 
 class Register_Admin_Page(tk.Toplevel):
     def __init__(self, master) -> None:
@@ -127,13 +128,13 @@ class Register_Admin_Page(tk.Toplevel):
             return "Male"
         else:
             return False
-
-
-class Search_Admin_Page(tk.Toplevel): #After Adim-Login
-    def __init__(self, master) -> None:
+    
+class Search_Admin_Page(tk.Toplevel): #After Admin-Login
+    def __init__(self, master, userid) -> None:
         super().__init__()
         self.master = master
         self.master.destroy()
+        self.userid = userid
         self.title("Search Page")
         self.geometry("350x350")
         wid_screen = self.winfo_screenwidth()
@@ -163,8 +164,7 @@ class Search_Admin_Page(tk.Toplevel): #After Adim-Login
     
     def customers_with_fee(self):
         Customer_Fee_Page(self)
-
-        
+      
 class Display_Item_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
@@ -235,40 +235,6 @@ class Under_Service_Page(tk.Toplevel):
     
     def close(self):
         self.destroy()
-
-class Customer_Fee_Page(tk.Toplevel):
-    def __init__(self, master) -> None:
-        super().__init__()
-        self.master = master
-        self.title("Display the Customer with Unpaid Fee")
-        self.geometry("500x350")
-        wid_screen = self.winfo_screenwidth()
-        height_screen = self.winfo_screenheight()
-        x = (wid_screen/2) - (WIDTH/2)
-        y = (height_screen/2) - (HEIGHT/2)
-        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT, x, y))
-
-        tk.Label(self, text="Customer with unpaid fee", font=("Calibri", 20)).pack()
-        table = ttk.Treeview(self)
-        table["columns"] = ("ID", "Name", "Fee")
-        table.column('#0', width=0, stretch=tk.NO)
-        table.column('ID', anchor=tk.CENTER, width=100)
-        table.column('Name', anchor=tk.CENTER, width=100)
-        table.column('Fee', anchor=tk.CENTER, width=100)
-        table.heading('#0', text='', anchor=tk.CENTER)
-        table.heading('ID', text='Customer ID', anchor=tk.CENTER)
-        table.heading('Name', text='Name', anchor=tk.CENTER)
-        table.heading('Fee', text='Fee Amount', anchor=tk.CENTER)
-
-        results = Administrator().customers_with_fee_unpaid()
-        for i in range(len(results)):
-            table.insert(parent='', index=i, iid=i, text='', values=results[i][:3])
-        table.pack()
-
-        tk.Button(self, text="Close", font=("Arial", 12), width=11, height=1, command=self.close).pack()
-    
-    def close(self):
-        self.destroy()
     
 class Search_Admin_Page2(tk.Toplevel):
     def __init__(self, master):
@@ -284,10 +250,16 @@ class Search_Admin_Page2(tk.Toplevel):
         tk.Label(self, text="Search your item", font=("Calibri", 20)).pack()
 
         self.label1 = tk.Label(self, text="Search By").pack()
-        self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model")).pack()
+        self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model", "ItemID"))
+        self.searchby.pack()
+        self.label7 = tk.Label(self, text="value").pack()
+        self.searchvalue = StringVar()
+        self.searchvalueentry = tk.Entry(self, textvariable = self.searchvalue)
+        self.searchvalueentry.pack()
 
         self.label2 = tk.Label(self, text="Color").pack()
-        self.colors = ttk.Combobox(self, width="10", values=("White", "Black", "Green", "Yellow")).pack()
+        self.colors = ttk.Combobox(self, width="10", values=("White", "Black", "Green", "Yellow"))
+        self.colors.pack()
 
         self.begin_year = StringVar()
         self.end_year = StringVar()
@@ -297,6 +269,10 @@ class Search_Admin_Page2(tk.Toplevel):
         self.begin_yearentry.pack()
         self.label4 = tk.Label(self, text="End year").pack()
         self.end_yearentry.pack()
+
+        self.label2 = tk.Label(self, text="Factory").pack()
+        self.factory = ttk.Combobox(self, width="10", values=("China", "Malaysia", "Philippines"))
+        self.factory.pack()
 
         self.begin_price = StringVar()
         self.end_price = StringVar()
@@ -311,10 +287,66 @@ class Search_Admin_Page2(tk.Toplevel):
         tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1, command=self.search).pack()
         tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
 
+    def addfilter(self):
+        x ={}
+        if self.colors.get() == "":
+            x=[]
+        else:
+            x["colors"]= self.colors.get()
+
+        if self.begin_year.get() =="":
+            x=x
+        else:
+            x["ProductionYear"]= {"$gte":self.begin_year.get()}
+
+        if self.end_year.get() =="":
+            x=x
+        else:
+            x["ProductionYear"]= {"$lte":self.end_year.get()}
+
+        if self.begin_price.get() =="":
+            x=x
+        else:
+            x["Price"]= {"$gte":self.begin_price.get()}
+
+        if self.end_price.get() =="":
+            x=x
+        else:
+            x["Price"]= {"$lte":self.end_price.get()}
+
+        if self.factory.get() == "":
+            x=x
+        else:
+            x["Factory"]=self.Factory.get()
+
+        return x
+
     def search(self):
-        return messagebox.showinfo("showinfo", "To be done")
+        A = Administrator()
+        dic = self.addfilter()
+        result = {}
+        if self.searchby == "Category" :
+            result = A.A_categories_Search(self.searchvalue.get(), dic)
+        elif self.searchby == "Model":
+            result = A.A_models_Search(self.searchvalue.get(), dic)
+        else:
+            result = A.A_ID_Search(self.searchvalue.get(), dic)
+
+        root = tk.Tk()
+        T = tk.Text(root, height=30, width=50)
+        T.pack()
+        ans = ""
+        for key in result:
+            ans += key + " : " + str(result[key]) +"\n"
+    
+        T.insert(tk.END, ans)
+        tk.mainloop()
+
+        return result
 
     def close(self):
         return self.destroy()
+
+
 
 
