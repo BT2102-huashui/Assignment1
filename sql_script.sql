@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS request (
     date DATE NOT NULL,
 	fee_amount float(20) DEFAULT NULL,
     payment_date DATE DEFAULT NULL,
-    admin_id INT NOT NULL,
+    admin_id INT DEFAULT NULL,
     FOREIGN KEY (item_id) REFERENCES item(id),
     FOREIGN KEY (customer_id) REFERENCES customer(id),
     FOREIGN KEY (admin_id) REFERENCES administrator(id)
