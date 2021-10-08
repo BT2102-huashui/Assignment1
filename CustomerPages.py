@@ -1,3 +1,4 @@
+from os import X_OK
 import tkinter as tk
 from tkinter import StringVar, messagebox, ttk
 from Customers import *
@@ -118,6 +119,8 @@ class Register_Cust_Page(tk.Toplevel):
             result = Customer().registration(userid, password, name, gender, number, address, email)
             if result[1]:
                 messagebox.showinfo("showinfo", result[0])
+                ###TODO add close
+                self.close()
             else:
                 messagebox.showwarning("showwarning", result[0])
         except:
@@ -129,6 +132,36 @@ class Register_Cust_Page(tk.Toplevel):
         self.phonentry.delete(0, tk.END)
         self.emailentry.delete(0, tk.END)
         self.adressentry.delete(0, tk.END)
+
+class Search_Result_Page(tk.Toplevel):
+    def __init__(self, master) -> None:
+        super().__init__()
+        self.master = master
+
+        result = self.master.results
+        
+        self.title('Search Result')
+        self.geometry("350x350")
+
+        wid_screen = self.winfo_screenwidth()
+        height_screen = self.winfo_screenheight()
+        x = (wid_screen/2) - (WIDTH/2)
+        y = (height_screen/2) - (HEIGHT2/2)
+        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT2, x, y))
+
+        tv = ttk.Treeview(self, columns=(1, 2, 3, 4), show = 'headings', height=8)
+
+        tv.heading(1, text='Category')
+        tv.heading(2, text='Model')
+        tv.heading(3, text='Warranty')
+        tv.heading(4, text='Inventory Level')
+
+        print(result)
+
+
+        for i in range(len(result)):
+            tv.insert(parent='', index=i, iid=i, values=result[i])
+        tv.pack()
 
 class Search_Cust_Page(tk.Toplevel):
     def __init__(self, master, userid) -> None:
@@ -144,12 +177,13 @@ class Search_Cust_Page(tk.Toplevel):
         x = (wid_screen/2) - (WIDTH/2)
         y = (height_screen/2) - (HEIGHT2/2)
         self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT2, x, y))
+
         tk.Label(self, text="Search your item", font=("Calibri", 20)).pack()
 
         self.label1 = tk.Label(self, text="Search By").pack()
         self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model"))
         self.searchby.pack()
-        self.label7 = tk.Label(self, text="value").pack()
+
         self.searchvalue = StringVar()
         self.searchvalueentry = tk.Entry(self, textvariable = self.searchvalue)
         self.searchvalueentry.pack()
@@ -181,10 +215,12 @@ class Search_Cust_Page(tk.Toplevel):
         self.end_pricentry.pack()
 
         
-        tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1, command=self.search).pack()
+        tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1, command=self.showResult).pack()
         tk.Button(self, text = "Purchase", font=("Arial", 12), width=11, height=1, command=self.purchase).pack()
         tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
     
+    def close(self):
+        self.destroy()
     def addfilter(self):
         x ={}
         if self.colors.get() == "":
@@ -222,13 +258,27 @@ class Search_Cust_Page(tk.Toplevel):
             x["Factory"]=self.factory.get()
 
         return x
-    
-    def close(self):
-        self.destroy()
 
     def search(self):
-        print("to be done")
+        dic = self.addfilter()
+        resultS = {}
+        if self.searchby.get() == "Category" :
+            resultS = Customer().C_categories_Search(self.searchvalue.get(), dic)
+        else:
+            resultS = Customer().C_models_Search(self.searchvalue.get(), dic)
 
+        ans = []
+        for key in resultS:
+            attribute = []
+            for i in key:
+                attribute.append(key[i])
+            ans.append(tuple(attribute))
+
+        return ans
+
+    def showResult(self):
+        self.results = self.search()
+        Search_Result_Page(self)
     def purchase(self):
         C = Customer()
         requirement = self.addfilter()
