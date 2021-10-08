@@ -9,13 +9,14 @@ load_dotenv()
 MY_SQL_PASSWORD = os.getenv('MY_SQL_PASSWORD')
 SQL_FILE = os.getenv('SQL_FILE')
 DB_NAME = os.getenv('DB_NAME')
+USERNAME = os.getenv('USERNAME')
 
 class Customer:
     def __init__(self) -> None:
         super().__init__()
         
     def login(self, userid, password):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=MY_SQL_PASSWORD, db='version2',
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db='version2',
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select password from customer where id = '%s'" % userid
@@ -35,7 +36,7 @@ class Customer:
             return ("Wrong password", False)
 
     def registration(self, userid, password, name, gender, number, address, email):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=MY_SQL_PASSWORD, db=DB_NAME,
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select * from customer where id = '%s'" % userid

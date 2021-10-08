@@ -2,13 +2,14 @@ import pymysql
 import pymongo
 import json
 import pprint
+from Customers import DB_NAME, MY_SQL_PASSWORD, USERNAME
 from Mongodbdata import loadMongoDb
-mysql_password = "ur password"
+
 
 class Administrator(object):
         
     def login(self, userid, password):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=mysql_password, db='version2',
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select password from administrator where id = '%s'" % userid
@@ -28,7 +29,7 @@ class Administrator(object):
             return ("Wrong password", False)
 
     def registration(self, userid, password, name, gender, number):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=MY_SQL_PASSWORD, db=DB_NAME,
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select * from administrator where id = '%s'" % userid
@@ -54,7 +55,7 @@ class Administrator(object):
             return ("Empty id or password", False)
     
     def product_manage(self):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=MY_SQL_PASSWORD, db=DB_NAME,
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
         sql = """
@@ -86,7 +87,7 @@ class Administrator(object):
         return values
 
     def customers_with_fee_unpaid(self):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=MY_SQL_PASSWORD, db=DB_NAME,
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                 charset='utf8')
         cursor = conn.cursor()
         try:
@@ -106,7 +107,7 @@ class Administrator(object):
             return "Error: unable to fecth data"
 
     def items_under_service(self):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=MY_SQL_PASSWORD, db=DB_NAME,
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                 charset='utf8')
         cursor = conn.cursor()
         try:
@@ -127,7 +128,7 @@ class Administrator(object):
             return "Error: unable to fecth data"
 
     def call_num_of_items_sold(self):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=MY_SQL_PASSWORD, db=DB_NAME,
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                 charset='utf8')
         cursor = conn.cursor()
     
