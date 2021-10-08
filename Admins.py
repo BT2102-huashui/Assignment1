@@ -2,13 +2,14 @@ import pymysql
 import pymongo
 import json
 import pprint
+from Customers import DB_NAME, MY_SQL_PASSWORD, USERNAME
 from Mongodbdata import loadMongoDb
-mysql_password = "ur password"
+
 
 class Administrator(object):
         
     def login(self, userid, password):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=mysql_password, db='version2',
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select password from administrator where id = '%s'" % userid
@@ -27,8 +28,8 @@ class Administrator(object):
             cursor.close()
             return ("Wrong password", False)
 
-    def registration(self, userid, password, gender):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=mysql_password, db='version2',
+    def registration(self, userid, password, name, gender, number):
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select * from administrator where id = '%s'" % userid
@@ -39,7 +40,10 @@ class Administrator(object):
             cursor.close()
             return ("User ID exists, please enter a new username.", False)
         elif password != "" and userid != "":
-            sql = "insert into administrator(id, password, gender) values" + "('" + userid + "', '" + password + "', '" + gender + "')"
+            sql = """
+            INSERT INTO administrator(id, password, name, gender, phone_number) values({}, '{}', '{}', '{}', '{}')
+            """
+            sql = sql.format(userid, password, name, gender, number)
             cursor.execute(sql)
             conn.commit()
             conn.close()
@@ -51,11 +55,15 @@ class Administrator(object):
             return ("Empty id or password", False)
     
     def product_manage(self):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=mysql_password, db='version2',
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
-        sql = "select product_id, count(purchase_status = 'Yes' or null), count(purchase_status = 'No' or null)  \
-              from item group by product_id order by product_id"
+        sql = """
+        SELECT product_id, COUNT(purchase_status = 'Yes' or null), COUNT(purchase_status = 'No' or null)
+        FROM item
+        GROUP BY product_id
+        ORDER BY product_id
+        """
         cursor.execute(sql)
         results = cursor.fetchall()
         num_rows = len(results)
@@ -77,6 +85,68 @@ class Administrator(object):
                 else:
                     values = values + ((i, 0, 0),)
         return values
+
+    def customers_with_fee_unpaid(self):
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+                                charset='utf8')
+        cursor = conn.cursor()
+        try:
+            sql1 = "USE " + DB_NAME
+            sql2 = """SELECT customer_id, name, fee_amount, phone_number, address, email_address
+                        FROM request AS r, customer AS c
+                        WHERE customer_id = c.id AND request_status ='Sub and Wait'
+                        ORDER BY customer_id, name"""
+            cursor.execute(sql1)
+            cursor.execute(sql2)
+            cursor.close()
+            results = cursor.fetchall()
+            #'customer_id','name','fee_amount','phone_number','address','email_address'
+            return results
+        except:
+            cursor.close()
+            return "Error: unable to fecth data"
+
+    def items_under_service(self):
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+                                charset='utf8')
+        cursor = conn.cursor()
+        try:
+            sql1 = "USE " + DB_NAME
+            sql2 = """SELECT item_id, service_status, category, model
+                        FROM request AS r
+                        LEFT JOIN item AS i
+                        ON r.item_id = i.id
+                        WHERE service_status='Waiting' OR service_status='Progress'
+                        ORDER BY item_id, service_status"""
+            cursor.execute(sql1)
+            cursor.execute(sql2)
+            cursor.close()
+            results = cursor.fetchall()
+            return results
+        except:
+            cursor.close()
+            return "Error: unable to fecth data"
+
+    def call_num_of_items_sold(self):
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+                                charset='utf8')
+        cursor = conn.cursor()
+    
+        try:
+            sql1 = "USE " + DB_NAME
+            sql2 = """SELECT category, model, COUNT(id) as num_sold
+                        FROM item
+                        WHERE purchase_status='Yes'
+                        GROUP BY category, model
+                        ORDER BY category, model"""
+            cursor.execute(sql1)
+            cursor.execute(sql2)
+            cursor.close()
+            results = cursor.fetchall()
+            return (('category','model','num_of_items_sold'), results)
+        except:
+            cursor.close()
+            return "Error: unable to fecth data"
 
     def A_ID_Search(self, ID, f):
         client = pymongo.MongoClient()
