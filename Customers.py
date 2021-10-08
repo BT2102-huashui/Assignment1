@@ -52,7 +52,7 @@ class Customer:
             cursor.close()
             return ("Empty id or password", False)
 
-    def C_categories_Search(self, c, f, n):
+    def C_categories_Search(self, c, f):
         client = pymongo.MongoClient()
         dbExist = client.list_database_names()
 
@@ -60,7 +60,7 @@ class Customer:
             loadMongodb()
         db = client["inventory"]
         myItems = db["items"]
-        dic = {"Category": c, "CustomerID": n}
+        dic = {"Category": c}
         dic.update(f)
         listI = myItems.aggregate([{
         '$lookup':{
@@ -82,7 +82,7 @@ class Customer:
         resultListI = list(listI)
         return resultListI
     
-    def C_models_Search(self, m, f, n):
+    def C_models_Search(self, m, f):
         client = pymongo.MongoClient()
         dbExist = client.list_database_names()
 
@@ -90,7 +90,7 @@ class Customer:
             loadMongodb()
         db = client["inventory"]
         myItems = db["items"]
-        dic = {"Model" : m, "CustomerID": n}
+        dic = {"Model" : m}
         dic.update(f)
         listI = myItems.aggregate([{
         '$lookup':{
@@ -112,7 +112,71 @@ class Customer:
         resultListI = list(listI)
         return resultListI
 
+    def purchaseDB(self, Iid, Cid):
+        client = pymongo.MongoClient()
+        dbExist = client.list_database_names()
+
+        if "inventory" not in dbExist:
+            loadMongodb()
+        db = client["inventory"]
+        myItems = db["items"]
+        myItems.update_one({"ItemID": Iid}, {"$set":{"CustomerID": Cid, "PurchaseStatus": "Sold"}})
+
+
+    def purchase(self, requirement):
+        client = pymongo.MongoClient()
+        dbExist = client.list_database_names()
+
+        if "inventory" not in dbExist:
+            loadMongodb()
+        db = client["inventory"]
+        myItems = db["items"]
+        result = myItems.aggregate([{
+        '$lookup':{
+            'from': "products",
+            'localField': "ProductID",
+            'foreignField': "ProductID",
+            'as': "combine"
+            }
+        },{'$project': { "_id":0, "ItemID":1, "Category":1, "Model":1, "Color":1, "PurchaseStatus":1, "CustomerID":1, "Color": 1, "Factory": 1,
+                                       "PowerSupply" : 1, "ProductionYear" :1,
+                       "Warranty":"$combine.Warranty (months)" , "Cost": "$combine.Cost ($)"}},
+            {'$match':
+            requirement}])
+        resultlist = list(result)[0]
+        return resultlist['ItemID']
+        
+        
+
+    def purchasedList(self, userid):
+        client = pymongo.MongoClient()
+        dbExist = client.list_database_names()
+
+        if "inventory" not in dbExist:
+            loadMongodb()
+        db = client["inventory"]
+        myItems = db["items"]
+        listI = myItems.aggregate([{
+        '$lookup':{
+            'from': "products",
+            'localField': "ProductID",
+            'foreignField': "ProductID",
+            'as': "combine"
+            }
+        },{'$match':
+            {"CustomerID":userid}},
+        {'$project': { "_id":0, "Category":1, "Model":1, "Color":1, "PurchaseStatus":1, "CustomerID":1, "Color": 1, "Factory": 1,
+                                       "PowerSupply" : 1, "ProductionYear" :1,
+                       "Warranty":"$combine.Warranty (months)" , "Cost": "$combine.Cost ($)"}}
+                
+        ])
+
+        resultlist = list(listI)[0]
+        return resultlist
+
+
         
 
 #Customer().registration("03", "1221")
-print(Customer().C_categories_Search("Lights", {}, "12"))
+#print(Customer().C_categories_Search("Lights", {}))
+print(Customer().purchase({"Color": "White"}))
