@@ -73,11 +73,23 @@ class Customer:
         client = pymongo.MongoClient()
         dbExist = client.list_database_names()
 
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+                               charset='utf8')
+        cursor = conn.cursor()
+        if isinstance (Iid,int): 
+            sql = "update item set customer_id = '%u',purchase_status= 'Sold' where id='s'" % (Cid,Iid)
+            cursor.execute(sql)
+        conn.commit()
+        conn.close()
+        cursor.close()
         if "inventory" not in dbExist:
             loadMongoDb()
         db = client["inventory"]
         myItems = db["items"]
-        myItems.update_one({"ItemID": Iid}, {"$set":{"CustomerID": Cid, "PurchaseStatus": "Sold"}})
+        if Iid == None:
+            return None
+        else: 
+            myItems.update_one({"ItemID": Iid}, {"$set":{"CustomerID": Cid, "PurchaseStatus": "Sold"}})
 
 
     def purchase(self, requirement):
@@ -88,6 +100,8 @@ class Customer:
             loadMongoDb()
         db = client["inventory"]
         myItems = db["items"]
+
+        requirement["PurchaseStatus"]="Unsold"
         result = myItems.aggregate([{
         '$lookup':{
             'from': "products",
@@ -100,8 +114,11 @@ class Customer:
                        "Warranty":"$combine.Warranty (months)" , "Cost": "$combine.Cost ($)"}},
             {'$match':
             requirement}])
-        resultlist = list(result)[0]
-        return resultlist['ItemID']
+        resultlist = list(result)
+        if len(resultlist)==0:
+            return None
+        else: 
+            return resultlist[0]['ItemID']
         
         
 
@@ -136,5 +153,4 @@ class Customer:
 
 #Customer().registration("03", "1221")
 #print(Customer().C_categories_Search("Lights", {}))
-print(Customer().purchase({"Color": "White"}))
-
+#print(Customer().purchase({"Color": "White"}))
