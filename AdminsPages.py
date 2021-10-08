@@ -284,10 +284,16 @@ class Search_Admin_Page2(tk.Toplevel):
         tk.Label(self, text="Search your item", font=("Calibri", 20)).pack()
 
         self.label1 = tk.Label(self, text="Search By").pack()
-        self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model")).pack()
+        self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model", "ItemID"))
+        self.searchby.pack()
+        self.label7 = tk.Label(self, text="value").pack()
+        self.searchvalue = StringVar()
+        self.searchvalueentry = tk.Entry(self, textvariable = self.searchvalue)
+        self.searchvalueentry.pack()
 
         self.label2 = tk.Label(self, text="Color").pack()
-        self.colors = ttk.Combobox(self, width="10", values=("White", "Black", "Green", "Yellow")).pack()
+        self.colors = ttk.Combobox(self, width="10", values=("White", "Black", "Green", "Yellow"))
+        self.colors.pack()
 
         self.begin_year = StringVar()
         self.end_year = StringVar()
@@ -297,6 +303,10 @@ class Search_Admin_Page2(tk.Toplevel):
         self.begin_yearentry.pack()
         self.label4 = tk.Label(self, text="End year").pack()
         self.end_yearentry.pack()
+
+        self.label2 = tk.Label(self, text="Factory").pack()
+        self.factory = ttk.Combobox(self, width="10", values=("China", "Malaysia", "Philippines"))
+        self.factory.pack()
 
         self.begin_price = StringVar()
         self.end_price = StringVar()
@@ -311,8 +321,62 @@ class Search_Admin_Page2(tk.Toplevel):
         tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1, command=self.search).pack()
         tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
 
+    def addfilter(self):
+        x ={}
+        if self.colors.get() == "":
+            x=[]
+        else:
+            x["colors"]= self.colors.get()
+
+        if self.begin_year.get() =="":
+            x=x
+        else:
+            x["ProductionYear"]= {"$gte":self.begin_year.get()}
+
+        if self.end_year.get() =="":
+            x=x
+        else:
+            x["ProductionYear"]= {"$lte":self.end_year.get()}
+
+        if self.begin_price.get() =="":
+            x=x
+        else:
+            x["Price"]= {"$gte":self.begin_price.get()}
+
+        if self.end_price.get() =="":
+            x=x
+        else:
+            x["Price"]= {"$lte":self.end_price.get()}
+
+        if self.factory.get() == "":
+            x=x
+        else:
+            x["Factory"]=self.Factory.get()
+
+        return x
+
     def search(self):
-        return messagebox.showinfo("showinfo", "To be done")
+        A = Administrator()
+        dic = self.addfilter()
+        result = {}
+        if self.searchby == "Category" :
+            result = A.A_categories_Search(self.searchvalue.get(), dic)
+        elif self.searchby == "Model":
+            result = A.A_models_Search(self.searchvalue.get(), dic)
+        else:
+            result = A.A_ID_Search(self.searchvalue.get(), dic)
+
+        root = tk.Tk()
+        T = tk.Text(root, height=30, width=50)
+        T.pack()
+        ans = ""
+        for key in result:
+            ans += key + " : " + str(result[key]) +"\n"
+    
+        T.insert(tk.END, ans)
+        tk.mainloop()
+
+        return result
 
     def close(self):
         return self.destroy()
