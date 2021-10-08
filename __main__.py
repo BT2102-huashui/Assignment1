@@ -1,7 +1,7 @@
 import os
-from dotenv import load_dotenv
 import sys
 sys.path.append(os.getcwd())
+from dotenv import load_dotenv
 from MainPages import *
 import pymysql
 load_dotenv()

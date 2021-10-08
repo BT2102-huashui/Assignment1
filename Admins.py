@@ -158,5 +158,5 @@ class Administrator(object):
     def A_categories_Search(self, c, f):
         return searchfordetail(c, f, True, False, False)
 
-print(Administrator().A_models_Search("Light1",{}))
+#print(Administrator().A_models_Search("Light1",{}))
 
