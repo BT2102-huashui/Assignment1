@@ -1,9 +1,15 @@
+import os
+import sys
+sys.path.append(os.getcwd())
 import pymysql
 import pymongo
-import json
-import pprint
+from dotenv import load_dotenv
 from Mongodbdata import loadMongoDb
-mysql_password = "ur password"
+load_dotenv()
+MY_SQL_PASSWORD = os.getenv('MY_SQL_PASSWORD')
+SQL_FILE = os.getenv('SQL_FILE')
+DB_NAME = os.getenv('DB_NAME')
+USERNAME = os.getenv('USERNAME')
 
 class Customer:
     def __init__(self) -> None:

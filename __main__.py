@@ -28,5 +28,5 @@ def readSQLFile(filename, conn):
             conn.commit()
 
 if __name__ == "__main__":
-    checkSQL()
+    #checkSQL()
     Main_Page().mainloop()

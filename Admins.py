@@ -190,7 +190,7 @@ class Administrator(object):
         {'$group': {"_id" : {"Category": "$Category", "Model":"$Model", "Warranty": "$combine.Warranty (months)","Cost": "$combine.Cost ($)",
                              "Price": "$combine.Price ($)"},
                     "Inventory": { "$sum": 1 }}},
-        {'$project': {"_id":0, "Category": "$Category", "Model":"$_id.Model", "Warranty": "$_id.Warranty","Cost": "$_id.Cost",
+        {'$project': {"_id":0, "Category": "$_id.Category", "Model":"$_id.Model", "Warranty": "$_id.Warranty","Cost": "$_id.Cost",
                              "Price": "$_id.Price", "Inventory_level":"$Inventory"}},
         {'$sort' : {"Model" :1}}
         ])
@@ -210,7 +210,7 @@ class Administrator(object):
         {'$group': {"_id" : {"Category": "$Category", "Model":"$Model", "Warranty": "$combine.Warranty (months)","Cost": "$combine.Cost ($)",
                              "Price": "$combine.Price ($)"},
                     "SoldNumber": { "$sum": 1 }}},
-        {'$project': {"_id":0, "Category": "$Category", "Model":"$_id.Model", "Warranty": "$_id.Warranty","Cost": "$_id.Cost",
+        {'$project': {"_id":0, "Category": "$_id.Category", "Model":"$_id.Model", "Warranty": "$_id.Warranty","Cost": "$_id.Cost",
                              "Price": "$_id.Price", "SoldNumber":"$SoldNumber"}},
         {'$sort' : {"Model" :1}}
         ])
@@ -222,5 +222,5 @@ class Administrator(object):
         
         return resultlist
 
-#print(Administrator().A_categories_Search("Lights",{}))
+print(Administrator().A_categories_Search("Lights",{}))
 
