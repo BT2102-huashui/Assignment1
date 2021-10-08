@@ -60,7 +60,7 @@ class Administrator(object):
                                charset='utf8')
         cursor = conn.cursor()
         sql = """
-        SELECT product_id, COUNT(purchase_status = 'Yes' or null), COUNT(purchase_status = 'No' or null)
+        SELECT product_id, COUNT(purchase_status = 'Sold' or null), COUNT(purchase_status = 'Unsold' or null)
         FROM item
         GROUP BY product_id
         ORDER BY product_id

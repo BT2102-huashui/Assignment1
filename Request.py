@@ -19,7 +19,7 @@ class Request(object):
             if ifinwarranty:#purchase status lack
                 sql2 = """
                 INSERT request (date, request_status, service_status, customer_id, item_id, fee_amount) 
-                VALUES(now(), 'Pro', 'Progress', {}, {}, 0)
+                VALUES(now(), 'Pro', 'Waiting', {}, {}, 0)
                 """
                 sql2 = sql2.format(userid, itemid)
                 cursor.execute(sql2)
@@ -48,15 +48,14 @@ class Request(object):
         cursor.execute(sql2)
         productid = cursor.fetchone()[0]
         
+Request().submit_request('1', '1001', True)
 
-#Request().submit_request('1', '1001', True)
-
-    def payment(self， requestid):
-        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME, charset='utf8')
-        cursor = conn.cursor()
-        sql = """
-        UPDATE request
-        SET request_status = 'Pro', Service_status = 'In Progress'
-        WHERE id = {}
-        """
-        sql = sql.format(requestid)
+    # def payment(self,requestid):
+    #     conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME, charset='utf8')
+    #     cursor = conn.cursor()
+    #     sql = """
+    #     UPDATE request
+    #     SET request_status = 'Pro', Service_status = 'Waiting'
+    #     WHERE id = {}
+    #     """
+    #     sql = sql.format(requestid)

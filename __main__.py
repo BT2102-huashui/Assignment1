@@ -8,7 +8,7 @@ load_dotenv()
 MY_SQL_PASSWORD = os.getenv('MY_SQL_PASSWORD')
 SQL_FILE = os.getenv('SQL_FILE')
 DB_NAME = os.getenv('DB_NAME')
-USERNAME = os.getenv('USERNAME')
+USERNAME = 'root'
 
 def checkSQL():
     conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, charset='utf8')
