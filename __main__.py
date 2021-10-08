@@ -12,12 +12,11 @@ USERNAME = os.getenv('USERNAME')
 
 def checkSQL():
     conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, charset='utf8')
-    cursor = conn.cursor()
-    readSQLFile(SQL_FILE, cursor)
-    conn.commit()
+    readSQLFile(SQL_FILE, conn)
     conn.close()
 
-def readSQLFile(filename, cursor):
+def readSQLFile(filename, conn):
+    cursor = conn.cursor()
     fd = open(filename, 'r')
     sqlFile = fd.read()
     fd.close()
@@ -26,6 +25,7 @@ def readSQLFile(filename, cursor):
     for command in sqlCommands:
         if command.strip() != '':
             cursor.execute(command)
+            conn.commit()
 
 if __name__ == "__main__":
     checkSQL()
