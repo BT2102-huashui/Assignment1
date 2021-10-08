@@ -170,6 +170,7 @@ class Search_Cust_Page(tk.Toplevel):
         self.label2 = tk.Label(self, text="Factory").pack()
         self.factory = ttk.Combobox(self, width="10", values=("China", "Malaysia", "Philippines"))
         self.factory.pack()
+
         self.begin_price = StringVar()
         self.end_price = StringVar()
         self.begin_pricentry = tk.Entry(self, textvariable=self.begin_price)
@@ -187,7 +188,7 @@ class Search_Cust_Page(tk.Toplevel):
     def addfilter(self):
         x ={}
         if self.colors.get() == "":
-            x=[]
+            x=x
         else:
             x["Color"]= self.colors.get()
 
@@ -221,6 +222,7 @@ class Search_Cust_Page(tk.Toplevel):
             x["Factory"]=self.factory.get()
 
         return x
+    
     def close(self):
         self.destroy()
 

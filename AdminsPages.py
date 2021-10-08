@@ -235,7 +235,6 @@ class Under_Service_Page(tk.Toplevel):
     
     def close(self):
         self.destroy()
-
 class Customer_Fee_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
@@ -269,7 +268,7 @@ class Customer_Fee_Page(tk.Toplevel):
     
     def close(self):
         self.destroy()
-
+    
 class Search_Admin_Page2(tk.Toplevel):
     def __init__(self, master):
         super().__init__()
@@ -328,7 +327,7 @@ class Search_Admin_Page2(tk.Toplevel):
     def addfilter(self):
         x ={}
         if self.colors.get() == "":
-            x=[]
+            x=x
         else:
             x["Color"]= self.colors.get()
 
