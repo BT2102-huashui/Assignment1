@@ -16,7 +16,7 @@ class Request(object):
         """
         sql1 = sql1.format(userid)
         cursor.execute(sql1)
-        items = cursor.fetchone()
+        items = cursor.fetchall()
         if int(itemid) in items:
             sql3 = """
             SELECT purchase_date, product_id
@@ -131,6 +131,15 @@ class Request(object):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
+        sql0 = """
+        SELECT id
+        FROM request
+        WHERE request_status = 'Progress'
+        """
+        cursor.execute(sql0)
+        requests = list(map(lambda x:x[0], cursor.fetchall()))
+        if int(requestid) not in requests:
+            return "Request cannot be approved"
         sql = """
                 UPDATE request
                 SET request_status = 'Approved', admin_id = {}
@@ -140,33 +149,35 @@ class Request(object):
         cursor.execute(sql)
         conn.commit()
         conn.close()
-        return print("Request approved")
+        return "Request approved"
 
     def complete(self, requestid, adminid):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
+        #Check whether can serve
+        sql = """
+        SELECT id
+        FROM request
+        WHERE service_status = "Progress"
+        """
+        cursor.execute(sql)
+        requests = cursor.fetchall()
+        requests = list(map(lambda x : x[0], requests))
+        if int(requestid) not in requests:
+            return "The request is not ready to be served."
+        #if can, serve it
         sql1 = """
-                SELECT id
-                FROM item
-                WHERE admin_id = {}
-                """
-        sql1 = sql1.format(adminid)
-        cursor.execute(sql1)
-        items = cursor.fetchone()
-        if int(itemid) in items:
-            sql2 = """
                 UPDATE request
-                SET request_status = 'Complete', service_status = 'Completed'
+                SET service_status = "Completed", request_status = 'Complete', admin_id = {}
                 WHERE id = {}
                 """
-            sql2 = sql2.format(requestid)
-            cursor.execute(sql)
-            conn.commit()
-            conn.close()
-            return print("Request completed")
-        else:
-            return print("This item is not under your service.")
+        sql1 = sql1.format(adminid, requestid)
+        cursor.execute(sql1)
+        conn.commit()
+        conn.close()
+        return "Request completed"
+
     
     def track(self, userid):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
@@ -202,4 +213,5 @@ class Request(object):
 # Request().submit_request('1', '1001', False)
 # Request().payment(5)
 # Request().cancel(6)
-Request().all_items(1)
+# Request().all_items(1)
+print(Request().approve('1', '1'))

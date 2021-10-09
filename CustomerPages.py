@@ -1,5 +1,6 @@
 from os import X_OK
 import tkinter as tk
+from RequestPages import *
 from tkinter import StringVar, messagebox, ttk
 from Customers import *
 from Admins import *
@@ -41,15 +42,15 @@ class Login_Cust_Page(tk.Toplevel):
         result = Customer().login(userid, password)
         if result[1]:
             messagebox.showinfo("showinfo", result[0])
-            self.call_search(userid)
+            self.call_next(userid)
         else:
             messagebox.showinfo("showinfo", result[0])
             self.usrentry.delete(0, tk.END)
             self.passentry.delete(0, tk.END)
 
-    def call_search(self, userid):
+    def call_next(self, userid):
         self.clear_widgets()
-        Search_Cust_Page(self, userid)
+        Cust_Page(self, userid)
 
     def clear_widgets(self):
         for widget in self.winfo_children():
@@ -132,6 +133,33 @@ class Register_Cust_Page(tk.Toplevel):
         self.phonentry.delete(0, tk.END)
         self.emailentry.delete(0, tk.END)
         self.adressentry.delete(0, tk.END)
+
+class Cust_Page(tk.Toplevel):
+    def __init__(self, master, userid) -> None:
+        super().__init__()
+        self.master = master
+        self.userid = userid
+        self.master.destroy()
+        self.title("Customer Page")
+        
+        wid_screen = self.winfo_screenwidth()
+        height_screen = self.winfo_screenheight()
+        x = (wid_screen/2) - (WIDTH/2)
+        y = (height_screen/2) - (HEIGHT2/2)
+        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT2, x, y))
+
+        tk.Button(self, text="Request", font=("Arial", 12), width=12, height=1, command=self.request).pack()
+        tk.Button(self, text="All Items", font=("Arial", 12), width=12, height=1, command=self.allItems).pack()
+        tk.Button(self, text="Search", font=("Arial", 12), width=12, height=1, command=self.search).pack()
+    
+    def request(self):
+        Request_Page(self, self.userid)
+
+    def allItems(self):
+        See_items_buy(self, self.userid)
+        
+    def search(self):
+        Search_Cust_Page(self, self.userid)
 
 class Search_Result_Page(tk.Toplevel):
     def __init__(self, master) -> None:

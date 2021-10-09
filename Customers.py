@@ -120,8 +120,6 @@ class Customer:
         else: 
             return resultlist[0]['ItemID']
         
-        
-
     def purchasedList(self, userid):
         client = pymongo.MongoClient()
         dbExist = client.list_database_names()

@@ -101,7 +101,6 @@ class Administrator(object):
             cursor.execute(sql2)
             cursor.close()
             results = cursor.fetchall()
-            #'customer_id','name','fee_amount','phone_number','address','email_address'
             return results
         except:
             cursor.close()
@@ -112,20 +111,16 @@ class Administrator(object):
                                 charset='utf8')
         cursor = conn.cursor()
         try:
-            sql1 = "USE " + DB_NAME
-            sql2 = """SELECT item_id, service_status, category, model
-                        FROM request AS r
-                        LEFT JOIN item AS i
-                        ON r.item_id = i.id
+            sql2 = """SELECT id, item_id, service_status, request_status
+                        FROM request
                         WHERE service_status='Waiting' OR service_status='Progress'
-                        ORDER BY item_id, service_status"""
-            cursor.execute(sql1)
+                        ORDER BY id"""
             cursor.execute(sql2)
-            cursor.close()
             results = cursor.fetchall()
+            conn.close()
             return results
         except:
-            cursor.close()
+            conn.close()
             return "Error: unable to fecth data"
 
     def call_num_of_items_sold(self):
@@ -159,4 +154,5 @@ class Administrator(object):
         return searchfordetail(c, f, True, False, False)
 
 #print(Administrator().A_models_Search("Light1",{}))
+Administrator().items_under_service()
 

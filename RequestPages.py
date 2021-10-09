@@ -10,6 +10,7 @@ class Request_Page(tk.Toplevel):
     def __init__(self, master, customerid) -> None:
         super().__init__()
         self.master = master
+        self.master.close()
         self.customerid = customerid
         self.title("Request Page")
         
@@ -82,4 +83,4 @@ class See_items_buy(tk.Toplevel):
         T.insert(tk.END, ans)
 
 #Request_Page(tk.Tk(), '1').mainloop()
-See_items_buy(tk.Tk(), '1').mainloop()
+#See_items_buy(tk.Tk(), '1').mainloop()
