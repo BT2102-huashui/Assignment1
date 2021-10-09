@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS product (
     category ENUM('Lights', 'Locks') NOT NULL,
     model ENUM('Light1', 'Light2', 'SmartHome1', 'Safe1', 'Safe2', 'Safe3') NOT NULL,
     price INT NOT NULL,
-    warranty INT NOT NULL,
+    warranty INT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS item (
 	id INT PRIMARY KEY NOT NULL,
@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS request (
     date DATE NOT NULL,
 	fee_amount float(20) DEFAULT NULL,
     payment_date DATE DEFAULT NULL,
-    admin_id INT NOT NULL,
-    FOREIGN KEY (item_id) REFERENCES item(id)
+    admin_id INT DEFAULT NULL,
+    FOREIGN KEY (item_id) REFERENCES item(id),
     FOREIGN KEY (customer_id) REFERENCES customer(id),
-    FOREIGN KEY (admin_id) REFERENCES administrator(id),
+    FOREIGN KEY (admin_id) REFERENCES administrator(id)
 );

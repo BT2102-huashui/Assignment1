@@ -37,7 +37,49 @@ class Request_Page(tk.Toplevel):
             return result[1]
 
     def track(self):
-        pass
+        result = Request().track(int(self.customerid))
+        T = tk.Text(self, height=20, width=50)
+        T.pack()
+        ans = ""
+        l = len(result)
+        if l > 0:
+            for key in result:
+                for i in range(3):
+                    ans += str(key[i]) + " "
+                ans += "\n"
+        else:
+            ans = "no"
+        T.insert(tk.END, ans)
 
+class See_items_buy(tk.Toplevel):
+    def __init__(self, master, customerid) -> None:
+        super().__init__()
+        self.master = master
+        self.customerid = customerid
+        self.title("All Items")
+        
+        wid_screen = self.winfo_screenwidth()
+        height_screen = self.winfo_screenheight()
+        x = (wid_screen/2) - (WIDTH/2)
+        y = (height_screen/2) - (HEIGHT/2)
+        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT, x, y))
 
-Request_Page(tk.Tk(), '1').mainloop()
+        tk.Button(self, text="See all items purchase", font=("Arial", 12), width=12, height=1, command=self.display).pack()
+
+    def display(self):
+        result = Request().all_items(int(self.customerid))
+        T = tk.Text(self, height=20, width=50)
+        T.pack()
+        ans = ""
+        l = len(result)
+        if l > 0:
+            for key in result:
+                for i in range(5):
+                    ans += str(key[i]) + " "
+                ans += "\n"
+        else:
+            ans = "no"
+        T.insert(tk.END, ans)
+
+#Request_Page(tk.Tk(), '1').mainloop()
+#See_items_buy(tk.Tk(), '1').mainloop()

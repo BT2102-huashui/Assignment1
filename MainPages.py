@@ -13,7 +13,6 @@ class Main_Page(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
         self.title("Main Page")
-        self.geometry("350x350")
 
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()

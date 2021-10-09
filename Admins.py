@@ -56,11 +56,15 @@ class Administrator(object):
             return ("Empty id or password", False)
     
     def product_manage(self):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=MY_SQL_PASSWORD, db='bt2102',
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
-        sql = "select product_id, count(purchase_status = 'Sold' or null), count(purchase_status = 'Unsold' or null)  \
-              from item group by product_id order by product_id"
+        sql = """
+        SELECT product_id, COUNT(purchase_status = 'Sold' or null), COUNT(purchase_status = 'Unsold' or null)
+        FROM item
+        GROUP BY product_id
+        ORDER BY product_id
+        """
         cursor.execute(sql)
         results = cursor.fetchall()
         num_rows = len(results)
@@ -83,8 +87,65 @@ class Administrator(object):
                     values = values + ((i, 0, 0),)
         return values
 
-    def A_ID_Search(self, ID):
-        return searchfordetail(ID, {},False, False, True)
+    def customers_with_fee_unpaid(self):
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+                                charset='utf8')
+        cursor = conn.cursor()
+        try:
+            sql1 = "USE " + DB_NAME
+            sql2 = """SELECT customer_id, name, fee_amount, phone_number, address, email_address
+                        FROM request AS r, customer AS c
+                        WHERE customer_id = c.id AND request_status ='Sub and Wait'
+                        ORDER BY customer_id, name"""
+            cursor.execute(sql1)
+            cursor.execute(sql2)
+            cursor.close()
+            results = cursor.fetchall()
+            return results
+        except:
+            cursor.close()
+            return "Error: unable to fecth data"
+
+    def items_under_service(self):
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+                                charset='utf8')
+        cursor = conn.cursor()
+        try:
+            sql2 = """SELECT id, item_id, service_status, request_status
+                        FROM request
+                        WHERE service_status='Waiting' OR service_status='Progress'
+                        ORDER BY id"""
+            cursor.execute(sql2)
+            results = cursor.fetchall()
+            conn.close()
+            return results
+        except:
+            conn.close()
+            return "Error: unable to fecth data"
+
+    def call_num_of_items_sold(self):
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+                                charset='utf8')
+        cursor = conn.cursor()
+    
+        try:
+            sql1 = "USE " + DB_NAME
+            sql2 = """SELECT category, model, COUNT(id) as num_sold
+                        FROM item
+                        WHERE purchase_status='Yes'
+                        GROUP BY category, model
+                        ORDER BY category, model"""
+            cursor.execute(sql1)
+            cursor.execute(sql2)
+            cursor.close()
+            results = cursor.fetchall()
+            return (('category','model','num_of_items_sold'), results)
+        except:
+            cursor.close()
+            return "Error: unable to fetch data"
+
+    def A_ID_Search(self, ID, f):
+        return searchfordetail(ID, f, False, False, True)
 
     def A_models_Search(self, m, f):
         return searchfordetail(m, f, False, False, False)
@@ -94,4 +155,6 @@ class Administrator(object):
 
     
 #print(Administrator().A_ID_Search("1001"))
+#print(Administrator().A_models_Search("Light1",{}))
+
 

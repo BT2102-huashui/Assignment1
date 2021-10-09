@@ -1,4 +1,6 @@
+from os import X_OK
 import tkinter as tk
+from RequestPages import *
 from tkinter import StringVar, messagebox, ttk
 from Customers import *
 from Admins import *
@@ -40,15 +42,15 @@ class Login_Cust_Page(tk.Toplevel):
         result = Customer().login(userid, password)
         if result[1]:
             messagebox.showinfo("showinfo", result[0])
-            self.call_search(userid)
+            self.call_next(userid)
         else:
             messagebox.showinfo("showinfo", result[0])
             self.usrentry.delete(0, tk.END)
             self.passentry.delete(0, tk.END)
 
-    def call_search(self, userid):
+    def call_next(self, userid):
         self.clear_widgets()
-        Search_Cust_Page(self, userid)
+        Cust_Page(self, userid)
 
     def clear_widgets(self):
         for widget in self.winfo_children():
@@ -118,6 +120,8 @@ class Register_Cust_Page(tk.Toplevel):
             result = Customer().registration(userid, password, name, gender, number, address, email)
             if result[1]:
                 messagebox.showinfo("showinfo", result[0])
+                ###TODO add close
+                self.close()
             else:
                 messagebox.showwarning("showwarning", result[0])
         except:
@@ -129,6 +133,94 @@ class Register_Cust_Page(tk.Toplevel):
         self.phonentry.delete(0, tk.END)
         self.emailentry.delete(0, tk.END)
         self.adressentry.delete(0, tk.END)
+
+class Cust_Page(tk.Toplevel):
+    def __init__(self, master, userid) -> None:
+        super().__init__()
+        self.master = master
+        self.userid = userid
+        self.master.destroy()
+        self.title("Customer Page")
+        
+        wid_screen = self.winfo_screenwidth()
+        height_screen = self.winfo_screenheight()
+        x = (wid_screen/2) - (WIDTH/2)
+        y = (height_screen/2) - (HEIGHT2/2)
+        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT2, x, y))
+
+        tk.Button(self, text="Request", font=("Arial", 12), width=12, height=1, command=self.request).pack()
+        tk.Button(self, text="All Items", font=("Arial", 12), width=12, height=1, command=self.allItems).pack()
+        tk.Button(self, text="Search", font=("Arial", 12), width=12, height=1, command=self.search).pack()
+    
+    def request(self):
+        Request_Page(self, self.userid)
+
+    def allItems(self):
+        See_items_buy(self, self.userid)
+        
+    def search(self):
+        Search_Cust_Page(self, self.userid)
+
+    def close(self):
+        self.destroy()
+
+class Search_Result_Page(tk.Toplevel):
+    def __init__(self, master) -> None:
+        super().__init__()
+        self.master = master
+
+        result = self.master.results
+        
+        self.title('Search Result')
+        self.geometry("350x350")
+
+        wid_screen = self.winfo_screenwidth()
+        height_screen = self.winfo_screenheight()
+        x = (wid_screen/2) - (WIDTH/2)
+        y = (height_screen/2) - (HEIGHT2/2)
+        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT2, x, y))
+
+        tv = ttk.Treeview(self, columns=(1, 2, 3, 4), show = 'headings', height=8)
+
+        tv.heading(1, text='Category')
+        tv.heading(2, text='Model')
+        tv.heading(3, text='Warranty')
+        tv.heading(4, text='Inventory Level')
+
+        if self.master.searchby.get() == "Category":
+            self.label7 = tk.Label(self, text="which model do you want").pack()
+        elif self.master.searchby.get()== "Model":
+            self.label7 = tk.Label(self, text="which category do you want").pack()
+        else:
+            print("no searchby")
+        
+        for i in range(len(result)):
+            tv.insert(parent='', index=i, iid=i, values=result[i])
+        tv.pack()
+
+        self.MorC = StringVar()
+        self.MorCentry = tk.Entry(self, textvariable = self.MorC)
+        self.MorCentry.pack()
+
+        tk.Button(self, text="Purchase", font=("Arial", 12), width=12, height=1, command=self.purchase).pack()
+
+    def purchase(self):
+        C = Customer()
+        requirement = self.master.addfilter()
+        requirement[self.master.searchby.get()] = self.master.searchvalue.get()
+        if self.master.searchby.get() == "Category":
+            requirement["Model"]= self.MorC.get()
+        elif self.master.searchby.get()== "Model":
+            requirement["Category"]= self.MorC.get()
+            
+
+        p = C.purchase(requirement)
+        print(requirement)
+        if p == None:
+            messagebox.showwarning("showwarning", "No such item exists.")
+        else:
+            messagebox.showwarning("showwarning", str(p) + "is purchased by" + self.master.userid  )
+            C.purchaseDB(p, self.master.userid)
 
 class Search_Cust_Page(tk.Toplevel):
     def __init__(self, master, userid) -> None:
@@ -144,11 +236,13 @@ class Search_Cust_Page(tk.Toplevel):
         x = (wid_screen/2) - (WIDTH/2)
         y = (height_screen/2) - (HEIGHT2/2)
         self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT2, x, y))
+
         tk.Label(self, text="Search your item", font=("Calibri", 20)).pack()
 
         self.label1 = tk.Label(self, text="Search By").pack()
         self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model"))
         self.searchby.pack()
+
         self.label7 = tk.Label(self, text="value").pack()
         self.searchvalue = StringVar()
         self.searchvalueentry = tk.Entry(self, textvariable = self.searchvalue)
@@ -180,11 +274,14 @@ class Search_Cust_Page(tk.Toplevel):
         self.label6 = tk.Label(self, text="End Price").pack()
         self.end_pricentry.pack()
 
-        
-        tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1, command=self.search).pack()
-        tk.Button(self, text = "Purchase", font=("Arial", 12), width=11, height=1, command=self.purchase).pack()
+    
+        tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1, command=self.showResult).pack()
         tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
     
+    
+    def close(self):
+        self.destroy()
+        
     def addfilter(self):
         x ={}
         if self.colors.get() == "":
@@ -221,22 +318,28 @@ class Search_Cust_Page(tk.Toplevel):
         else:
             x["Factory"]=self.factory.get()
 
+        self.filter = x
         return x
-    
-    def close(self):
-        self.destroy()
 
     def search(self):
-        print("to be done")
-
-    def purchase(self):
-        C = Customer()
-        requirement = self.addfilter()
-        requirement[self.searchby.get()] = self.searchvalue.get()
-        p = C.purchase(requirement)
-        print(requirement)
-        if p == None:
-            messagebox.showwarning("showwarning", "No such item exists.")
+        dic = self.addfilter()
+        resultS = {}
+        if self.searchby.get() == "Category" :
+            resultS = Customer().C_categories_Search(self.searchvalue.get(), dic)
         else:
-            messagebox.showwarning("showwarning", str(p) + "is purchased by" + self.userid  )
-            C.purchaseDB(p, self.userid)
+            resultS = Customer().C_models_Search(self.searchvalue.get(), dic)
+
+        ans = []
+        for key in resultS:
+            attribute = []
+            for i in key:
+                attribute.append(key[i])
+            ans.append(tuple(attribute))
+
+        return ans
+
+    def showResult(self):
+        self.results = self.search()
+        Search_Result_Page(self)
+
+
