@@ -16,7 +16,7 @@ class Request(object):
         """
         sql1 = sql1.format(userid)
         cursor.execute(sql1)
-        items = cursor.fetchall()
+        items = list(map(lambda x:x[0], cursor.fetchall()))
         if int(itemid) in items:
             sql3 = """
             SELECT purchase_date, product_id
@@ -215,3 +215,4 @@ class Request(object):
 # Request().cancel(6)
 # Request().all_items(1)
 # Request().approve('1', '1')
+print(Request().submit_request('1', '1001'))
