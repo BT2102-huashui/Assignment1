@@ -161,6 +161,9 @@ class Cust_Page(tk.Toplevel):
     def search(self):
         Search_Cust_Page(self, self.userid)
 
+    def close(self):
+        self.destroy()
+
 class Search_Result_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()

@@ -10,7 +10,6 @@ class Request_Page(tk.Toplevel):
     def __init__(self, master, customerid) -> None:
         super().__init__()
         self.master = master
-        self.master.close()
         self.customerid = customerid
         self.title("Request Page")
         

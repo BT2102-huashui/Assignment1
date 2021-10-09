@@ -214,4 +214,4 @@ class Request(object):
 # Request().payment(5)
 # Request().cancel(6)
 # Request().all_items(1)
-print(Request().approve('1', '1'))
+# Request().approve('1', '1')

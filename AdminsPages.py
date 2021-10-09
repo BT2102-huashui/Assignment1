@@ -209,7 +209,7 @@ class Under_Service_Page(tk.Toplevel):
 
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
-        x = (wid_screen/2) - (WIDTH2/2)
+        x = (wid_screen/2) - (WIDTH/2)
         y = (height_screen/2) - (HEIGHT2/2)
         self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT2, x, y))
 
@@ -294,9 +294,10 @@ class Customer_Fee_Page(tk.Toplevel):
         self.destroy()
     
 class Search_Admin_Page2(tk.Toplevel):
-    def __init__(self, master):
+    def __init__(self, master, userid):
         super().__init__()
         self.master = master
+        self.userid = userid
         self.title("Search Page")
         
         wid_screen = self.winfo_screenwidth()
