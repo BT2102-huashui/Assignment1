@@ -248,7 +248,11 @@ class Search_Admin_Page2(tk.Toplevel):
         y = (height_screen/2) - (HEIGHT2/2)
         self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT2, x, y))
         tk.Label(self, text="Search your item", font=("Calibri", 20)).pack()
-
+        
+        self.labe21 = tk.Label(self, text="Search by ItemID, please leave the rest blank").pack()
+        self.ItemID = StringVar()
+        self.ItemIDentry = tk.Entry(self, textvariable = self.ItemID)
+        self.ItemIDentry.pack()
         self.label1 = tk.Label(self, text="Search By").pack()
         self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model", "ItemID"))
         self.searchby.pack()
@@ -284,15 +288,15 @@ class Search_Admin_Page2(tk.Toplevel):
         self.end_pricentry.pack()
 
         
-        tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1, command=self.search).pack()
+        tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1, command=self.display).pack()
         tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
 
     def addfilter(self):
         x ={}
         if self.colors.get() == "":
-            x=[]
+            x=x
         else:
-            x["colors"]= self.colors.get()
+            x["Color"]= self.colors.get()
 
         if self.begin_year.get() =="":
             x=x
@@ -301,6 +305,8 @@ class Search_Admin_Page2(tk.Toplevel):
 
         if self.end_year.get() =="":
             x=x
+        elif "ProductionYear" in x.keys():
+            x["ProductionYear"]["$lte"]=self.end_year.get()
         else:
             x["ProductionYear"]= {"$lte":self.end_year.get()}
 
@@ -311,13 +317,15 @@ class Search_Admin_Page2(tk.Toplevel):
 
         if self.end_price.get() =="":
             x=x
+        elif "Price" in x.keys():
+            x["Price"]["$lte"]=self.end_price.get()
         else:
             x["Price"]= {"$lte":self.end_price.get()}
 
         if self.factory.get() == "":
             x=x
         else:
-            x["Factory"]=self.Factory.get()
+            x["Factory"]=self.factory.get()
 
         return x
 
@@ -325,27 +333,58 @@ class Search_Admin_Page2(tk.Toplevel):
         A = Administrator()
         dic = self.addfilter()
         result = {}
-        if self.searchby == "Category" :
+        if self.searchby.get() == "Category" :
             result = A.A_categories_Search(self.searchvalue.get(), dic)
-        elif self.searchby == "Model":
+        elif self.searchby.get() == "Model":
             result = A.A_models_Search(self.searchvalue.get(), dic)
         else:
-            result = A.A_ID_Search(self.searchvalue.get(), dic)
+            result = A.A_ID_Search(self.ItemID.get(), dic)
 
-        root = tk.Tk()
-        T = tk.Text(root, height=30, width=50)
-        T.pack()
         ans = ""
-        for key in result:
-            ans += key + " : " + str(result[key]) +"\n"
-    
-        T.insert(tk.END, ans)
-        tk.mainloop()
-
+        for i in range(len(result)):
+            ans += str(i) + '\n'
+            for key in result[i]:
+                ans += key + " : " + str(result[i][key]) +"\n"
+            
+        #anstext = tk.Label(self, text=ans, font=("Calibri", 10)).pack()
+        #tk.Label(self, text=self.searchby.get(), font=("Calibri", 20)).pack()
+        print(dic)
         return result
+    
+    def display(self):
+        self.results = self.search()
+        Display_Search_Page(self)
 
     def close(self):
         return self.destroy()
+
+class Display_Search_Page(tk.Toplevel):
+    def __init__(self, master) -> None:
+        super().__init__()
+        self.master = master
+        self.title("Display Search Results")
+        self.geometry("500x350")
+        wid_screen = self.winfo_screenwidth()
+        height_screen = self.winfo_screenheight()
+        x = (wid_screen/2) - (WIDTH/2)
+        y = (height_screen/2) - (HEIGHT/2)
+        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT, x, y))
+
+        result = self.master.results
+        test = tk.Label(self, text="test", font=("Calibri", 10)).pack()
+        ans = ""
+        for i in range(len(result)):
+            ans += str(i+1) + ': \n'
+            for key in result[i]:
+                ans += key + " : " + str(result[i][key]) +"\n"
+        anstext = tk.Label(self, text=ans, font=("Calibri", 10)).pack()
+    
+    def close(self):
+        self.destroy()
+
+
+        
+
 
 
 

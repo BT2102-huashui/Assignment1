@@ -5,18 +5,21 @@ import pymysql
 import pymongo
 from dotenv import load_dotenv
 from Mongodbdata import loadMongoDb
+from Search import searchfordetail
 load_dotenv()
 MY_SQL_PASSWORD = os.getenv('MY_SQL_PASSWORD')
 SQL_FILE = os.getenv('SQL_FILE')
 DB_NAME = os.getenv('DB_NAME')
 USERNAME = os.getenv('USERNAME')
+USERNAME = 'root'
+
 
 class Customer:
     def __init__(self) -> None:
         super().__init__()
         
     def login(self, userid, password):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=mysql_password, db='version2',
+        conn = pymysql.connect(host='localhost', port=3306, user='root', password=MY_SQL_PASSWORD, db='bt2102',
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select password from customer where id = '%s'" % userid
@@ -35,8 +38,8 @@ class Customer:
             cursor.close()
             return ("Wrong password", False)
 
-    def registration(self, userid, password):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=mysql_password, db='version2',
+    def registration(self, userid, password, name, gender, number, address, email):
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select * from customer where id = '%s'" % userid
@@ -47,7 +50,11 @@ class Customer:
             cursor.close()
             return ("User ID exists, please enter a new username.", False)
         elif password != "" and userid != "":
-            sql = "insert into customer(id, password) values" + "(" + userid + ", '" + password + "')"
+            sql = """
+            INSERT INTO customer(id, password, name, gender, phone_number, address, email_address) 
+            VALUES({}, '{}', '{}', '{}', '{}', '{}', '{}')
+            """
+            sql = sql.format(userid, password, name, gender, number, address, email)
             cursor.execute(sql)
             conn.commit()
             conn.close()
@@ -59,74 +66,33 @@ class Customer:
             return ("Empty id or password", False)
 
     def C_categories_Search(self, c, f):
-        client = pymongo.MongoClient()
-        dbExist = client.list_database_names()
-
-        if "inventory" not in dbExist:
-            loadMongodb()
-        db = client["inventory"]
-        myItems = db["items"]
-        dic = {"Category": c}
-        dic.update(f)
-        listI = myItems.aggregate([{
-        '$lookup':{
-            'from': "products",
-            'localField': "ProductID",
-            'foreignField': "ProductID",
-            'as': "combine"
-            }
-        },{'$match':
-            dic},
-        {'$group': {"_id" : {"Category": "$Category", "Model":"$Model", "Warranty": "$combine.Warranty (months)","Cost": "$combine.Cost ($)",
-                             "Price": "$combine.Price ($)"},
-                    "Inventory": { "$sum": 1 }}},
-        {'$project': {"_id":0, "Category":"$_id.Category", "Model":"$_id.Model", "Warranty": "$_id.Warranty","Cost": "$_id.Cost",
-                             "Price": "$_id.Price", "Inventory_level":"$Inventory"}},
-        {'$sort' : {"Category" :1}}
-        ])
-
-        resultListI = list(listI)
-        return resultListI
+        return searchfordetail(c, f, True, True, False)
     
     def C_models_Search(self, m, f):
-        client = pymongo.MongoClient()
-        dbExist = client.list_database_names()
-
-        if "inventory" not in dbExist:
-            loadMongodb()
-        db = client["inventory"]
-        myItems = db["items"]
-        dic = {"Model" : m}
-        dic.update(f)
-        listI = myItems.aggregate([{
-        '$lookup':{
-            'from': "products",
-            'localField': "ProductID",
-            'foreignField': "ProductID",
-            'as': "combine"
-            }
-        },{'$match':
-            dic},
-        {'$group': {"_id" : {"Category": "$Category", "Model":"$Model", "Warranty": "$combine.Warranty (months)","Cost": "$combine.Cost ($)",
-                             "Price": "$combine.Price ($)"},
-                    "Inventory": { "$sum": 1 }}},
-        {'$project': {"_id":0, "Category":"$_id.Category", "Model":"$_id.Model", "Warranty": "$_id.Warranty","Cost": "$_id.Cost",
-                             "Price": "$_id.Price", "Inventory_level":"$Inventory"}},
-        {'$sort' : {"Category" :1}}
-        ])
-
-        resultListI = list(listI)
-        return resultListI
+        return searchfordetail(m, f, False, True, False)
 
     def purchaseDB(self, Iid, Cid):
         client = pymongo.MongoClient()
         dbExist = client.list_database_names()
 
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+                               charset='utf8')
+        cursor = conn.cursor()
+        
+        
+
         if "inventory" not in dbExist:
-            loadMongodb()
+            loadMongoDb()
         db = client["inventory"]
         myItems = db["items"]
-        myItems.update_one({"ItemID": Iid}, {"$set":{"CustomerID": Cid, "PurchaseStatus": "Sold"}})
+        if Iid == None:
+            return None
+        else: 
+            myItems.update_one({"ItemID": Iid}, {"$set":{"CustomerID": Cid, "PurchaseStatus": "Sold"}})
+            sql = "update item set customer_id = %s,purchase_status= 'Sold' ,purchase_date= now() where id=%u" % (Cid,int(Iid))
+            cursor.execute(sql)
+            conn.commit()
+        conn.close()
 
 
     def purchase(self, requirement):
@@ -134,9 +100,11 @@ class Customer:
         dbExist = client.list_database_names()
 
         if "inventory" not in dbExist:
-            loadMongodb()
+            loadMongoDb()
         db = client["inventory"]
         myItems = db["items"]
+
+        requirement["PurchaseStatus"]="Unsold"
         result = myItems.aggregate([{
         '$lookup':{
             'from': "products",
@@ -149,8 +117,11 @@ class Customer:
                        "Warranty":"$combine.Warranty (months)" , "Cost": "$combine.Cost ($)"}},
             {'$match':
             requirement}])
-        resultlist = list(result)[0]
-        return resultlist['ItemID']
+        resultlist = list(result)
+        if len(resultlist)==0:
+            return None
+        else: 
+            return resultlist[0]['ItemID']
         
         
 
@@ -159,7 +130,7 @@ class Customer:
         dbExist = client.list_database_names()
 
         if "inventory" not in dbExist:
-            loadMongodb()
+            loadMongoDb()
         db = client["inventory"]
         myItems = db["items"]
         listI = myItems.aggregate([{

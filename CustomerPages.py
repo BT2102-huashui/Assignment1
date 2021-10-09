@@ -147,10 +147,16 @@ class Search_Cust_Page(tk.Toplevel):
         tk.Label(self, text="Search your item", font=("Calibri", 20)).pack()
 
         self.label1 = tk.Label(self, text="Search By").pack()
-        self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model")).pack()
+        self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model"))
+        self.searchby.pack()
+        self.label7 = tk.Label(self, text="value").pack()
+        self.searchvalue = StringVar()
+        self.searchvalueentry = tk.Entry(self, textvariable = self.searchvalue)
+        self.searchvalueentry.pack()
 
         self.label2 = tk.Label(self, text="Color").pack()
-        self.colors = ttk.Combobox(self, width="10", values=("White", "Black", "Green", "Yellow")).pack()
+        self.colors = ttk.Combobox(self, width="10", values=("White", "Black", "Green", "Yellow"))
+        self.colors.pack()
 
         self.begin_year = StringVar()
         self.end_year = StringVar()
@@ -160,6 +166,10 @@ class Search_Cust_Page(tk.Toplevel):
         self.begin_yearentry.pack()
         self.label4 = tk.Label(self, text="End year").pack()
         self.end_yearentry.pack()
+
+        self.label2 = tk.Label(self, text="Factory").pack()
+        self.factory = ttk.Combobox(self, width="10", values=("China", "Malaysia", "Philippines"))
+        self.factory.pack()
 
         self.begin_price = StringVar()
         self.end_price = StringVar()
@@ -172,10 +182,61 @@ class Search_Cust_Page(tk.Toplevel):
 
         
         tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1, command=self.search).pack()
+        tk.Button(self, text = "Purchase", font=("Arial", 12), width=11, height=1, command=self.purchase).pack()
         tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
+    
+    def addfilter(self):
+        x ={}
+        if self.colors.get() == "":
+            x=x
+        else:
+            x["Color"]= self.colors.get()
+
+        if self.begin_year.get() =="":
+            x=x
+        else:
+            x["ProductionYear"]= {"$gte":self.begin_year.get()}
+
+        if self.end_year.get() =="":
+            x=x
+        elif "ProductionYear" in x.keys():
+            x["ProductionYear"]["$lte"]=self.end_year.get()
+        else:
+            x["ProductionYear"]= {"$lte":self.end_year.get()}
+
+        if self.begin_price.get() =="":
+            x=x
+        else:
+            x["Price"]= {"$gte":self.begin_price.get()}
+
+        if self.end_price.get() =="":
+            x=x
+        elif "Price" in x.keys():
+            x["Price"]["$lte"]=self.end_price.get()
+        else:
+            x["Price"]= {"$lte":self.end_price.get()}
+
+        if self.factory.get() == "":
+            x=x
+        else:
+            x["Factory"]=self.factory.get()
+
+        return x
     
     def close(self):
         self.destroy()
 
     def search(self):
         print("to be done")
+
+    def purchase(self):
+        C = Customer()
+        requirement = self.addfilter()
+        requirement[self.searchby.get()] = self.searchvalue.get()
+        p = C.purchase(requirement)
+        print(requirement)
+        if p == None:
+            messagebox.showwarning("showwarning", "No such item exists.")
+        else:
+            messagebox.showwarning("showwarning", str(p) + "is purchased by" + self.userid  )
+            C.purchaseDB(p, self.userid)

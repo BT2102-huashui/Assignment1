@@ -4,6 +4,7 @@ import json
 import pprint
 from Customers import DB_NAME, MY_SQL_PASSWORD, USERNAME
 from Mongodbdata import loadMongoDb
+from Search import searchfordetail
 
 
 class Administrator(object):
@@ -28,8 +29,8 @@ class Administrator(object):
             cursor.close()
             return ("Wrong password", False)
 
-    def registration(self, userid, password, gender):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=mysql_password, db='version2',
+    def registration(self, userid, password, name, gender, number):
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select * from administrator where id = '%s'" % userid
@@ -40,7 +41,10 @@ class Administrator(object):
             cursor.close()
             return ("User ID exists, please enter a new username.", False)
         elif password != "" and userid != "":
-            sql = "insert into administrator(id, password, gender) values" + "('" + userid + "', '" + password + "', '" + gender + "')"
+            sql = """
+            INSERT INTO administrator(id, password, name, gender, phone_number) values({}, '{}', '{}', '{}', '{}')
+            """
+            sql = sql.format(userid, password, name, gender, number)
             cursor.execute(sql)
             conn.commit()
             conn.close()
@@ -52,10 +56,10 @@ class Administrator(object):
             return ("Empty id or password", False)
     
     def product_manage(self):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=mysql_password, db='version2',
+        conn = pymysql.connect(host='localhost', port=3306, user='root', password=MY_SQL_PASSWORD, db='bt2102',
                                charset='utf8')
         cursor = conn.cursor()
-        sql = "select product_id, count(purchase_status = 'Yes' or null), count(purchase_status = 'No' or null)  \
+        sql = "select product_id, count(purchase_status = 'Sold' or null), count(purchase_status = 'Unsold' or null)  \
               from item group by product_id order by product_id"
         cursor.execute(sql)
         results = cursor.fetchall()
@@ -79,148 +83,15 @@ class Administrator(object):
                     values = values + ((i, 0, 0),)
         return values
 
-    def A_ID_Search(self, ID, f):
-        client = pymongo.MongoClient()
-        dbExist = client.list_database_names()
-
-        if "inventory" not in dbExist:
-            loadMongoDb()
-            
-        dic = {"ItemID":ID}
-        dic.update(f)
-        result = myItems.aggregate([{
-        '$lookup':{
-            'from': "products",
-            'localField': "ProductID",
-            'foreignField': "ProductID",
-            'as': "combine"
-            }
-        },{'$match':
-            dic},
-        {'$project': { "_id":0, "Category":1, "Model":1, "Color":1, "PurchaseStatus":1, "CustomerID":1, "Color": 1, "Factory": 1,
-                                       "PowerSupply" : 1, "ProductionYear" :1,
-                       "Warranty":"$combine.Warranty (months)" , "Cost": "$combine.Cost ($)"}}
-                
-        ])
-        resultlist = list(result)
-        return resultlist
+    def A_ID_Search(self, ID):
+        return searchfordetail(ID, {},False, False, True)
 
     def A_models_Search(self, m, f):
-        client = pymongo.MongoClient()
-        dbExist = client.list_database_names()
-
-        if "inventory" not in dbExist:
-            loadMongoDb()
-
-        db = client["inventory"]
-        myItems = db["items"]    
-        dic = {"Model" : m}
-        dic.update(f)
-        newdic = dic.copy()
-        dic["PurchaseStatus"]= "Sold"
-        newdic["PurchaseStatus"]= "Unsold"
-        
-        listI = myItems.aggregate([{
-        '$lookup':{
-            'from': "products",
-            'localField': "ProductID",
-            'foreignField': "ProductID",
-            'as': "combine"
-            }
-        },{'$match':
-            newdic},
-        {'$group': {"_id" : {"Category": "$Category", "Model":"$Model", "Warranty": "$combine.Warranty (months)","Cost": "$combine.Cost ($)",
-                             "Price": "$combine.Price ($)"},
-                    "Inventory": { "$sum": 1 }}},
-        {'$project': {"_id":0, "Category":"$_id.Category", "Model":"$_id.Model", "Warranty": "$_id.Warranty","Cost": "$_id.Cost",
-                             "Price": "$_id.Price", "Inventory_level":"$Inventory"}},
-        {'$sort' : {"Category" :1}}
-        ])
-
-        resultListI = list(listI)
-
-        
-        result = myItems.aggregate([{
-        '$lookup':{
-            'from': "products",
-            'localField': "ProductID",
-            'foreignField': "ProductID",
-            'as': "combine"
-            }
-        },{'$match':
-            {"Category": c,"PurchaseStatus": "Sold"}},
-        {'$group': {"_id" : {"Category": "$Category","Model":"$Model", "Warranty": "$combine.Warranty (months)","Cost": "$combine.Cost ($)",
-                             "Price": "$combine.Price ($)"},
-                    "SoldNumber": { "$sum": 1 }}},
-        {'$project': {"_id":0, "Model":"$_id.Model", "Warranty": "$_id.Warranty","Cost": "$_id.Cost",
-                             "Price": "$_id.Price", "SoldNumber":"$SoldNumber"}},
-        {'$sort' : {"Model" :1}}
-        ])
-                
-        resultlist = list(result)
-        
-        for i in range(len(resultlist)):
-            resultlist[i]["Inventory_level"]= resultListI[i]["Inventory_level"]
-        return resultlist
+        return searchfordetail(m, f, False, False, False)
 
     def A_categories_Search(self, c, f):
-        client = pymongo.MongoClient()
-        dbExist = client.list_database_names()
+        return searchfordetail(c, f, True, False, False)
 
-        if "inventory" not in dbExist:
-            loadMongoDb()
-
-        db = client["inventory"]
-        myItems = db["items"]
-        dic = {"Category": c,}
-        dic.update(f)
-        newdic = dic.copy()
-        dic["PurchaseStatus"]= "Sold"
-        newdic["PurchaseStatus"]= "Unsold"
-        
-        listI = myItems.aggregate([{
-        '$lookup':{
-            'from': "products",
-            'localField': "ProductID",
-            'foreignField': "ProductID",
-            'as': "combine"
-            }
-        },{'$match':
-            newdic},
-        {'$group': {"_id" : {"Category": "$Category", "Model":"$Model", "Warranty": "$combine.Warranty (months)","Cost": "$combine.Cost ($)",
-                             "Price": "$combine.Price ($)"},
-                    "Inventory": { "$sum": 1 }}},
-        {'$project': {"_id":0, "Category": "$_id.Category", "Model":"$_id.Model", "Warranty": "$_id.Warranty","Cost": "$_id.Cost",
-                             "Price": "$_id.Price", "Inventory_level":"$Inventory"}},
-        {'$sort' : {"Model" :1}}
-        ])
-
-        resultListI = list(listI)
-
-        
-        result = myItems.aggregate([{
-        '$lookup':{
-            'from': "products",
-            'localField': "ProductID",
-            'foreignField': "ProductID",
-            'as': "combine"
-            }
-        },{'$match':
-            {"Category": c,"PurchaseStatus": "Sold"}},
-        {'$group': {"_id" : {"Category": "$Category", "Model":"$Model", "Warranty": "$combine.Warranty (months)","Cost": "$combine.Cost ($)",
-                             "Price": "$combine.Price ($)"},
-                    "SoldNumber": { "$sum": 1 }}},
-        {'$project': {"_id":0, "Category": "$_id.Category", "Model":"$_id.Model", "Warranty": "$_id.Warranty","Cost": "$_id.Cost",
-                             "Price": "$_id.Price", "SoldNumber":"$SoldNumber"}},
-        {'$sort' : {"Model" :1}}
-        ])
-                
-        resultlist = list(result)
-        
-        for i in range(len(resultlist)):
-            resultlist[i]["Inventory_level"]= resultListI[i]["Inventory_level"]
-        
-        return resultlist
-
-print(Administrator().A_categories_Search("Lights",{}))
+    
+#print(Administrator().A_ID_Search("1001"))
 
