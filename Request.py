@@ -112,20 +112,21 @@ class Request(object):
         conn.close()
         return print("Payment successful")
 
-    def cancel(self, requestid):
+    def cancel(self, requestid, userid):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                            charset='utf8')
         cursor = conn.cursor()
+
         sql = """
         UPDATE request
         SET request_status = 'Cancel', service_status = 'Completed'
-        WHERE id = {}
+        WHERE id = {} AND customer_id = {}
         """
-        sql = sql.format(requestid)
+        sql = sql.format(requestid, userid)
         cursor.execute(sql)
         conn.commit()
         conn.close()
-        return print("Request cancelled")
+        return "Request cancelled"
 
     def approve(self, requestid, adminid):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
@@ -184,7 +185,7 @@ class Request(object):
                                charset='utf8')
         cursor = conn.cursor()
         sql1 = """
-                SELECT id, item_id, service_status
+                SELECT id, item_id, service_status, fee_amount
                 FROM request
                 WHERE customer_id = {}
                 """

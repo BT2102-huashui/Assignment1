@@ -260,7 +260,7 @@ class Under_Service_Page(tk.Toplevel):
         self.destroy()
 
 class Customer_Fee_Page(tk.Toplevel):
-    def __init__(self, master) -> None:
+    def __init__(self, master, userid) -> None:
         super().__init__()
         self.master = master
         self.title("Display the Customer with Unpaid Fee")
@@ -316,7 +316,7 @@ class Search_Admin_Page2(tk.Toplevel):
         self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model", "ItemID"))
         self.searchby.pack()
 
-        self.label7 = tk.Label(self, text="value").pack()
+        self.label7 = tk.Label(self, text="Category/Model Name").pack()
         self.searchvalue = StringVar()
         self.searchvalueentry = tk.Entry(self, textvariable = self.searchvalue)
         self.searchvalueentry.pack()

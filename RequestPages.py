@@ -19,13 +19,35 @@ class Request_Page(tk.Toplevel):
         y = (height_screen/2) - (HEIGHT/2)
         self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT, x, y))
 
+        #Submit Request
         self.itemid = tk.StringVar()
         tk.Label(self, text="ID of item to submit request").pack()
         self.itemidentry = tk.Entry(self, textvariable=self.itemid)
         self.itemidentry.pack()
-
         tk.Button(self, text="Submit", font=("Arial", 12), width=12, height=1, command=self.submit).pack()
-        tk.Button(self, text="Track my requests", font=("Arial", 12), width=12, height=1, command=self.track).pack()
+        #Cancel Request
+        self.requestid = tk.StringVar()
+        tk.Label(self, text="ID of request to cancel").pack()
+        self.requestidentry = tk.Entry(self, textvariable=self.requestid)
+        self.requestidentry.pack()
+        tk.Button(self, text="Submit", font=("Arial", 12), width=12, height=1, command=self.cancel).pack()
+        #tk.Button(self, text="Track my requests", font=("Arial", 12), width=12, height=1, command=self.track).pack()
+
+        tv = ttk.Treeview(self, columns=(1, 2, 3, 4), show = 'headings', height=8)
+
+        tv.column(1, anchor=tk.CENTER, width=100)
+        tv.column(2, anchor=tk.CENTER, width=100)
+        tv.column(3, anchor=tk.CENTER, width=100)
+        tv.column(4, anchor=tk.CENTER, width=100)
+        tv.heading(1, text='Request ID')
+        tv.heading(2, text='Item ID')
+        tv.heading(3, text='Service Status')
+        tv.heading(4, text='Fee Amount')
+
+        result = Request().track(int(self.customerid))
+        for i in range(len(result)):
+            tv.insert(parent='', index=i, iid=i, values=result[i])
+        tv.pack()
 
     def submit(self):
         itemid = self.itemid.get()
@@ -35,21 +57,12 @@ class Request_Page(tk.Toplevel):
             self.itemidentry.delete(0, tk.END)
         else:
             return result[1]
+    
+    def cancel(self):
+        requestid = self.requestid.get()
+        mess = Request().cancel(requestid, self.customerid)
+        messagebox.showinfo("showinfo", mess)
 
-    def track(self):
-        result = Request().track(int(self.customerid))
-        T = tk.Text(self, height=20, width=50)
-        T.pack()
-        ans = ""
-        l = len(result)
-        if l > 0:
-            for key in result:
-                for i in range(3):
-                    ans += str(key[i]) + " "
-                ans += "\n"
-        else:
-            ans = "no"
-        T.insert(tk.END, ans)
 
 class See_items_buy(tk.Toplevel):
     def __init__(self, master, customerid) -> None:
@@ -64,22 +77,27 @@ class See_items_buy(tk.Toplevel):
         y = (height_screen/2) - (HEIGHT/2)
         self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT, x, y))
 
-        tk.Button(self, text="See all items purchase", font=("Arial", 12), width=12, height=1, command=self.display).pack()
+        tv = ttk.Treeview(self, columns=(1, 2, 3, 4, 5), show = 'headings', height=8)
 
-    def display(self):
+        tv.column(1, anchor=tk.CENTER, width=100)
+        tv.column(2, anchor=tk.CENTER, width=100)
+        tv.column(3, anchor=tk.CENTER, width=100)
+        tv.column(4, anchor=tk.CENTER, width=100)
+        tv.column(5, anchor=tk.CENTER, width=100)
+        tv.heading(1, text='Item ID')
+        tv.heading(2, text='Category')
+        tv.heading(3, text='Model')
+        tv.heading(4, text='Product ID')
+        tv.heading(5, text='Purchase Date')
         result = Request().all_items(int(self.customerid))
-        T = tk.Text(self, height=20, width=50)
-        T.pack()
-        ans = ""
-        l = len(result)
-        if l > 0:
-            for key in result:
-                for i in range(5):
-                    ans += str(key[i]) + " "
-                ans += "\n"
-        else:
-            ans = "no"
-        T.insert(tk.END, ans)
+        for i in range(len(result)):
+            tv.insert(parent='', index=i, iid=i, values=result[i])
+        tv.pack()
+
+        tk.Button(self, text="Close", font=("Arial", 12), width=12, height=1, command=self.close).pack()
+
+    def close(self):
+        self.destroy()
 
 #Request_Page(tk.Tk(), '1').mainloop()
 #See_items_buy(tk.Tk(), '1').mainloop()

@@ -42,39 +42,9 @@ def loadMongoDb():
     myItems.update_many({"Category": 'Locks', "Model": 'SmartHome1'},
                        {"$set":{"ProductID": 7}})
 
-    for i in range(1,8):
-        resultI = myItems.aggregate([{
-        '$lookup':{
-            'from': "products",
-            'localField': "ProductID",
-            'foreignField': "ProductID",
-            'as': "combine"
-            }
-        },{'$match':
-            {"ProductID": i, 'PurchaseStatus': 'Unsold'}},
-        {'$count': 'Inventory_level'}])
-        resultlistI = list(resultI)[0]
-
-        resultS = myItems.aggregate([{
-        '$lookup':{
-            'from': "products",
-            'localField': "ProductID",
-            'foreignField': "ProductID",
-            'as': "combine"
-            }
-        },{'$match':
-            {"ProductID": i, 'PurchaseStatus': 'Sold'}},
-        {'$count': 'SoldNumber'}])
-        resultlistS = list(resultS)[0]
-
-        myProducts.update_one({"ProductID": i},
-                    {"$set": resultlistI})
-        myProducts.update_one({"ProductID": i},
-                    {"$set": resultlistS})
-                                                  
-    
+                                                   
 
 
-    myItems.update_many({"PurchaseStatus":"Sold"}, {"$set":{"CustomerID": "12"}})
+    myItems.update_many({"PurchaseStatus":"Sold"}, {"$set":{"CustomerID": "12"}}) ##This is for data given
 
 

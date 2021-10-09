@@ -76,12 +76,6 @@ class Customer:
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
-        if isinstance (Iid,int): 
-            sql = "update item set customer_id = '%u',purchase_status= 'Sold' where id='s'" % (Cid,Iid)
-            cursor.execute(sql)
-        conn.commit()
-        conn.close()
-        cursor.close()
         if "inventory" not in dbExist:
             loadMongoDb()
         db = client["inventory"]
@@ -90,6 +84,10 @@ class Customer:
             return None
         else: 
             myItems.update_one({"ItemID": Iid}, {"$set":{"CustomerID": Cid, "PurchaseStatus": "Sold"}})
+            sql = "update item set customer_id = %s,purchase_status= 'Sold' ,purchase_date= now() where id=%u" % (Cid,int(Iid))
+            cursor.execute(sql)
+            conn.commit()
+        conn.close()
 
 
     def purchase(self, requirement):
