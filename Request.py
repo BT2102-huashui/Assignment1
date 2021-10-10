@@ -97,20 +97,20 @@ class Request(object):
         return 40 + 0.2 * price
 
 
-    def payment(self, requestid):
+    def payment(self, requestid, userid):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                            charset='utf8')
         cursor = conn.cursor()
         sql = """
         UPDATE request
-        SET request_status = 'Progress', service_status = 'Progress', payment_date = now()
-        WHERE id = {}
+        SET request_status = 'Progress', service_status = 'Progress', payment_date = now(), fee_amount = 0
+        WHERE id = {} AND customer_id = {}
         """
-        sql = sql.format(requestid)
+        sql = sql.format(requestid, userid)
         cursor.execute(sql)
         conn.commit()
         conn.close()
-        return print("Payment successful")
+        return "Payment successful"
 
     def cancel(self, requestid, userid):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,

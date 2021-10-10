@@ -31,6 +31,12 @@ class Request_Page(tk.Toplevel):
         self.requestidentry = tk.Entry(self, textvariable=self.requestid)
         self.requestidentry.pack()
         tk.Button(self, text="Submit", font=("Arial", 12), width=12, height=1, command=self.cancel).pack()
+        #Payment
+        self.payid = tk.StringVar()
+        tk.Label(self, text="ID of request to pay").pack()
+        self.payidentry = tk.Entry(self, textvariable=self.payid)
+        self.payidentry.pack()
+        tk.Button(self, text="Submit", font=("Arial", 12), width=12, height=1, command=self.pay).pack()
         #tk.Button(self, text="Track my requests", font=("Arial", 12), width=12, height=1, command=self.track).pack()
 
         tv = ttk.Treeview(self, columns=(1, 2, 3, 4), show = 'headings', height=8)
@@ -61,6 +67,11 @@ class Request_Page(tk.Toplevel):
     def cancel(self):
         requestid = self.requestid.get()
         mess = Request().cancel(requestid, self.customerid)
+        messagebox.showinfo("showinfo", mess)
+
+    def pay(self):
+        requestid = self.payid.get()
+        mess = Request().payment(requestid, self.customerid)
         messagebox.showinfo("showinfo", mess)
 
 
