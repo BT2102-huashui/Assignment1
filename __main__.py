@@ -26,30 +26,51 @@ def checkSQL(filename):
     #insert items
     json_items_data = open('items.json').read()
     json_items = json.loads(json_items_data)
-    for item in json_items:
-        itemID = item.get('ItemID')
-        category = item.get('Category')
-        purchasestatus = item.get('PurchaseStatus')
-        model = item.get('Model')
-        cursor.execute('INSERT INTO bt2102.item(id, category, purchase_status, model) value(%s, %s, %s, %s)', (itemID, category, purchasestatus, model))
-    conn.commit()
-
     json_products_data = open('products.json').read()
     json_products = json.loads(json_products_data)
+    try:
+        for item in json_items:
+            itemID = item.get('ItemID')
+            category = item.get('Category')
+            purchasestatus = item.get('PurchaseStatus')
+            model = item.get('Model')
+            cursor.execute('INSERT INTO bt2102.item(id, category, purchase_status, model) value(%s, %s, %s, %s)', (itemID, category, purchasestatus, model))
+        conn.commit()
 
-    for product in json_products:
-        productID = product.get('ProductID')
-        product_category = product.get('Category')
-        product_model = product.get('Model')
-        product_price = product.get('Price ($)')
-        product_warranty = product.get('Warranty (months)')
-        print(product_warranty)
-        cursor.execute('insert into bt2102.product(id, category, model, price, warranty) value(%s, %s, %s, %s, %s)', (productID, product_category, product_model, product_price, product_warranty))
-    conn.commit()
-    conn.close()
+        for product in json_products:
+            productID = product.get('ProductID')
+            product_category = product.get('Category')
+            product_model = product.get('Model')
+            product_price = product.get('Price ($)')
+            product_warranty = product.get('Warranty (months)')
+            print(product_warranty)
+            cursor.execute('insert into bt2102.product(id, category, model, price, warranty) value(%s, %s, %s, %s, %s)', (productID, product_category, product_model, product_price, product_warranty))
+        conn.commit()
+
+        ca1 = ["Light1", "Light2", "SmartHome1"]
+        ca2 = ["Safe1", "Safe2", "Safe3", "SmartHome1"]
+        for i in range(len(ca1)):
+            sql1 = """
+            UPDATE bt2102.item SET product_id = {}
+            WHERE category = 'Lights' AND model = '{}'
+            """
+            sql1 = sql1.format(i+1, ca1[i])
+            cursor.execute(sql1)
+            conn.commit()
+        for i in range(len(ca2)):
+            sql = """
+            UPDATE bt2102.item SET product_id = {}
+            WHERE category = 'Locks' AND model = '{}'
+            """
+            sql = sql.format(i+4, ca2[i])
+            cursor.execute(sql)
+            conn.commit()
+        conn.close()
+    except:
+        conn.close()
 
 
 if __name__ == "__main__":
-    #checkSQL(SQL_FILE)
+    checkSQL(SQL_FILE)
     from MainPages import Main_Page
     Main_Page().mainloop()
