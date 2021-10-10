@@ -7,7 +7,7 @@ from RequestPages import Request_Page
 
 WIDTH = 500
 HEIGHT = 350
-HEIGHT2 = 500
+HEIGHT2 = 550
 
 
 class Login_Admin_Page(tk.Toplevel):
@@ -267,25 +267,30 @@ class Customer_Fee_Page(tk.Toplevel):
 
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
-        x = (wid_screen/2) - (WIDTH/2)
+        x = (wid_screen/2) - (2*WIDTH/2)
         y = (height_screen/2) - (HEIGHT/2)
-        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT, x, y))
+        self.geometry('%dx%d+%d+%d' % (2*WIDTH, HEIGHT, x, y))
 
         tk.Label(self, text="Customer with unpaid fee", font=("Calibri", 20)).pack()
-        table = ttk.Treeview(self)
-        table["columns"] = ("ID", "Name", "Fee")
-        table.column('#0', width=0, stretch=tk.NO)
-        table.column('ID', anchor=tk.CENTER, width=100)
-        table.column('Name', anchor=tk.CENTER, width=100)
-        table.column('Fee', anchor=tk.CENTER, width=100)
-        table.heading('#0', text='', anchor=tk.CENTER)
-        table.heading('ID', text='Customer ID', anchor=tk.CENTER)
-        table.heading('Name', text='Name', anchor=tk.CENTER)
-        table.heading('Fee', text='Fee Amount', anchor=tk.CENTER)
+        table = ttk.Treeview(self, columns=(1, 2, 3, 4, 5, 6, 7), show = 'headings', height=8)
+        table.column(1, anchor=tk.CENTER, width=100)
+        table.column(2, anchor=tk.CENTER, width=100)
+        table.column(3, anchor=tk.CENTER, width=100)
+        table.column(4, anchor=tk.CENTER, width=100)
+        table.column(5, anchor=tk.CENTER, width=100)
+        table.column(6, anchor=tk.CENTER, width=100)
+        table.column(7, anchor=tk.CENTER, width=100)
+        table.heading(1, text='Request ID', anchor=tk.CENTER)
+        table.heading(2, text='Customer ID', anchor=tk.CENTER)
+        table.heading(3, text='Name', anchor=tk.CENTER)
+        table.heading(4, text='Fee Amount', anchor=tk.CENTER)
+        table.heading(5, text='Phone number', anchor=tk.CENTER)
+        table.heading(6, text='Address', anchor=tk.CENTER)
+        table.heading(7, text='Email', anchor=tk.CENTER)
 
         results = Administrator().customers_with_fee_unpaid()
         for i in range(len(results)):
-            table.insert(parent='', index=i, iid=i, text='', values=results[i][:3])
+            table.insert(parent='', index=i, iid=i, text='', values=results[i])
         table.pack()
 
         tk.Button(self, text="Close", font=("Arial", 12), width=11, height=1, command=self.close).pack()
