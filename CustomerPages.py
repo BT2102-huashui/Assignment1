@@ -173,11 +173,11 @@ class Search_Result_Page(tk.Toplevel):#After search page
         
         self.title('Search Result')
 
-        wid_screen = self.winfo_screenwidth()
-        height_screen = self.winfo_screenheight()
-        x = (wid_screen/2) - (WIDTH/2)
-        y = (height_screen/2) - (HEIGHT2/2)
-        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT2, x, y))
+        # wid_screen = self.winfo_screenwidth()
+        # height_screen = self.winfo_screenheight()
+        # x = (wid_screen/2) - (WIDTH/2)
+        # y = (height_screen/2) - (HEIGHT2/2)
+        # self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT2, x, y))
 
         tv = ttk.Treeview(self, columns=(1, 2, 3, 4, 5), show = 'headings', height=8)
 
@@ -185,7 +185,7 @@ class Search_Result_Page(tk.Toplevel):#After search page
         tv.heading(2, text='Model')
         tv.heading(3, text='Warranty')
         tv.heading(4, text='Price')
-        tv.heading(4, text='Inventory Level')
+        tv.heading(5, text='Inventory Level')
 
         if self.master.searchby.get() == "Category":
             self.label7 = tk.Label(self, text="which model do you want").pack()
