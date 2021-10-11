@@ -1,13 +1,12 @@
 CREATE DATABASE IF NOT EXISTS bt2102;
-USE bt2102;
-CREATE TABLE IF NOT EXISTS administrator (
+CREATE TABLE IF NOT EXISTS bt2102.administrator (
 	id INT PRIMARY KEY NOT NULL,
     name VARCHAR(50) NOT NULL,
     gender ENUM('Female', 'Male') NOT NULL,
     phone_number VARCHAR(20) NOT NULL,
     password VARCHAR(50) NOT NULL
 );
-CREATE TABLE IF NOT EXISTS customer (
+CREATE TABLE IF NOT EXISTS bt2102.customer (
 	id INT PRIMARY KEY NOT NULL,
     name VARCHAR(50) NOT NULL,
     gender ENUM('Female', 'Male') NOT NULL,
@@ -16,14 +15,14 @@ CREATE TABLE IF NOT EXISTS customer (
     address VARCHAR(100) NOT NULL,
     email_address VARCHAR(50) NOT NULL
 );
-CREATE TABLE IF NOT EXISTS product (
+CREATE TABLE IF NOT EXISTS bt2102.product (
     id INT PRIMARY KEY NOT NULL,
     category ENUM('Lights', 'Locks') NOT NULL,
     model ENUM('Light1', 'Light2', 'SmartHome1', 'Safe1', 'Safe2', 'Safe3') NOT NULL,
     price INT NOT NULL,
     warranty INT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS item (
+CREATE TABLE IF NOT EXISTS bt2102.item (
 	id INT PRIMARY KEY NOT NULL,
     category ENUM('Lights', 'Locks') NOT NULL,
     model ENUM('Light1', 'Light2', 'SmartHome1', 'Safe1', 'Safe2', 'Safe3') NOT NULL,
@@ -32,10 +31,9 @@ CREATE TABLE IF NOT EXISTS item (
     purchase_date DATE DEFAULT NULL,
     customer_id INT DEFAULT NULL,
     admin_id INT DEFAULT NULL,
-    FOREIGN KEY (customer_id) REFERENCES customer(id),
-    FOREIGN KEY (admin_id) REFERENCES administrator(id)
+    FOREIGN KEY (customer_id) REFERENCES customer(id)
 );
-CREATE TABLE IF NOT EXISTS request (
+CREATE TABLE IF NOT EXISTS bt2102.request (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     item_id INT NOT NULL,
     customer_id INT NOT NULL,

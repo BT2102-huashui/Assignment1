@@ -10,7 +10,7 @@ load_dotenv()
 MY_SQL_PASSWORD = os.getenv('MY_SQL_PASSWORD')
 SQL_FILE = os.getenv('SQL_FILE')
 DB_NAME = os.getenv('DB_NAME')
-USERNAME = 'root'
+USERNAME = 'user1'
 
 
 class Customer:
@@ -77,7 +77,7 @@ class Customer:
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
-
+        
         if "inventory" not in dbExist:
             loadMongoDb()
         db = client["inventory"]

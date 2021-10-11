@@ -7,9 +7,9 @@ from RequestPages import Request_Page
 
 WIDTH = 500
 HEIGHT = 350
-HEIGHT2 = 500
+HEIGHT2 = 550
 
-
+#These are pages for admin
 class Login_Admin_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
@@ -148,7 +148,7 @@ class Search_Admin_Page(tk.Toplevel): #After Admin-Login
         tk.Button(self, text="Display the sold items", font=("Arial", 12), width=20, height=1, command=self.display_items).pack()
         tk.Button(self, text="Items under service", font=("Arial", 12), width=20, height=1, command=self.under_service_items).pack()
         tk.Button(self, text="Customers with fee", font=("Arial", 12), width=20, height=1, command=self.customers_with_fee).pack()
-        tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
+        tk.Button(self, text="Close", font=("Arial", 12), width=11, height=1, command=self.close).pack()
 
     def close(self):
         self.destroy()
@@ -196,8 +196,6 @@ class Display_Item_Page(tk.Toplevel):
             table.insert(parent='', index=i, iid=i, text='', values=values[i])
         table.pack()
         tk.Button(self, text="Close", font=("Arial", 12), width=11, height=1, command=self.close).pack()
-        # tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1).pack()
-        # tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
     
     def close(self):
         self.destroy()
@@ -245,6 +243,7 @@ class Under_Service_Page(tk.Toplevel):
         self.itementry = tk.Entry(self, textvariable=self.item)
         self.itementry.pack()
         tk.Button(self, text="Serve", font=("Arial", 12), width=11, height=1, command=self.serve).pack()
+        tk.Button(self, text="Refresh", font=("Arial", 12), width=12, height=1, command=self.refresh).pack()
         tk.Button(self, text="Close", font=("Arial", 12), width=11, height=1, command=self.close).pack()
     
     def approve(self):
@@ -252,42 +251,52 @@ class Under_Service_Page(tk.Toplevel):
         mess = Request().approve(requestid, self.userid)
         messagebox.showinfo("showinfo", mess)
         self.requestentry.delete(0, tk.END)
+        
     def serve(self):
         requestid = self.item.get()
         mess = Request().complete(requestid, self.userid)
         messagebox.showinfo("showinfo", mess)
         self.itementry.delete(0, tk.END)
+        
+    def refresh(self):
+        Under_Service_Page(self.master, self.userid)
+        self.close()
 
     def close(self):
         self.destroy()
 
 class Customer_Fee_Page(tk.Toplevel):
-    def __init__(self, master) -> None:
+    def __init__(self, master, userid) -> None:
         super().__init__()
         self.master = master
         self.title("Display the Customer with Unpaid Fee")
 
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
-        x = (wid_screen/2) - (WIDTH/2)
+        x = (wid_screen/2) - (2*WIDTH/2)
         y = (height_screen/2) - (HEIGHT/2)
-        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT, x, y))
+        self.geometry('%dx%d+%d+%d' % (2*WIDTH, HEIGHT, x, y))
 
         tk.Label(self, text="Customer with unpaid fee", font=("Calibri", 20)).pack()
-        table = ttk.Treeview(self)
-        table["columns"] = ("ID", "Name", "Fee")
-        table.column('#0', width=0, stretch=tk.NO)
-        table.column('ID', anchor=tk.CENTER, width=100)
-        table.column('Name', anchor=tk.CENTER, width=100)
-        table.column('Fee', anchor=tk.CENTER, width=100)
-        table.heading('#0', text='', anchor=tk.CENTER)
-        table.heading('ID', text='Customer ID', anchor=tk.CENTER)
-        table.heading('Name', text='Name', anchor=tk.CENTER)
-        table.heading('Fee', text='Fee Amount', anchor=tk.CENTER)
+        table = ttk.Treeview(self, columns=(1, 2, 3, 4, 5, 6, 7), show = 'headings', height=8)
+        table.column(1, anchor=tk.CENTER, width=100)
+        table.column(2, anchor=tk.CENTER, width=100)
+        table.column(3, anchor=tk.CENTER, width=100)
+        table.column(4, anchor=tk.CENTER, width=100)
+        table.column(5, anchor=tk.CENTER, width=100)
+        table.column(6, anchor=tk.CENTER, width=100)
+        table.column(7, anchor=tk.CENTER, width=100)
+        table.heading(1, text='Request ID', anchor=tk.CENTER)
+        table.heading(2, text='Customer ID', anchor=tk.CENTER)
+        table.heading(3, text='Name', anchor=tk.CENTER)
+        table.heading(4, text='Fee Amount', anchor=tk.CENTER)
+        table.heading(5, text='Phone number', anchor=tk.CENTER)
+        table.heading(6, text='Address', anchor=tk.CENTER)
+        table.heading(7, text='Email', anchor=tk.CENTER)
 
         results = Administrator().customers_with_fee_unpaid()
         for i in range(len(results)):
-            table.insert(parent='', index=i, iid=i, text='', values=results[i][:3])
+            table.insert(parent='', index=i, iid=i, text='', values=results[i])
         table.pack()
 
         tk.Button(self, text="Close", font=("Arial", 12), width=11, height=1, command=self.close).pack()
@@ -318,7 +327,7 @@ class Search_Admin_Page2(tk.Toplevel):
         self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model"))
         self.searchby.pack()
 
-        self.label7 = tk.Label(self, text="value").pack()
+        self.label7 = tk.Label(self, text="Category/Model Name").pack()
         self.searchvalue = StringVar()
         self.searchvalueentry = tk.Entry(self, textvariable = self.searchvalue)
         self.searchvalueentry.pack()
@@ -349,9 +358,8 @@ class Search_Admin_Page2(tk.Toplevel):
         self.label6 = tk.Label(self, text="End Price").pack()
         self.end_pricentry.pack()
 
-        
         tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1, command=self.display).pack()
-        tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
+        tk.Button(self, text="Close", font=("Arial", 12), width=11, height=1, command=self.close).pack()
 
     def addfilter(self):
         x ={}
@@ -402,17 +410,8 @@ class Search_Admin_Page2(tk.Toplevel):
         else:
             result = A.A_ID_Search(self.ItemID.get(), dic)
 
-        ans = ""
-        for i in range(len(result)):
-            ans += str(i) + '\n'
-            for key in result[i]:
-                ans += key + " : " + str(result[i][key]) +"\n"
-            
-        #anstext = tk.Label(self, text=ans, font=("Calibri", 10)).pack()
-        #tk.Label(self, text=self.searchby.get(), font=("Calibri", 20)).pack()
-
         return result
-    
+
     def display(self):
         self.results = self.search()
         Display_Search_Page(self)
@@ -428,23 +427,35 @@ class Display_Search_Page(tk.Toplevel):
 
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
-        x = (wid_screen/2) - (WIDTH/2)
+        x = (wid_screen/2) - (2*WIDTH/2)
         y = (height_screen/2) - (HEIGHT/2)
-        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT, x, y))
+        self.geometry('%dx%d+%d+%d' % (2*WIDTH, HEIGHT, x, y))
 
         result = self.master.results
+        if len(result) == 0:
+            messagebox.showinfo("showinfo", "No results, please change the filters!")
+            self.close()
+        else:
+            length = ()
+            for i in range(len(result[0].items())):
+                length += (i+1,)
+            tv = ttk.Treeview(self, columns=length, show = 'headings', height=8)
+            for i in length:
+                tv.column(i, anchor=tk.CENTER, width=100)
+            headings = list(result[0].keys())
+            for i in range(len(result[0].items())):
+                tv.heading(i+1, text=headings[i])
 
-        ans = ""
-        for i in range(len(result)):
-            ans += str(i+1) + ': \n'
-            for key in result[i]:
-                ans += key + " : " + str(result[i][key]) +"\n"
+            for i in range(len(result)):
+                row = tuple(result[i].values())
+                tv.insert(parent='', index=i+1, iid=i+1, values=row)
+            tv.pack()
 
-        tk.Label(self, text=ans, font=("Calibri", 10)).pack()
-
+            tk.Button(self, text="Close", font=("Arial", 12), width=12, height=1, command=self.close).pack()
     
     def close(self):
         self.destroy()
+
 
 
         

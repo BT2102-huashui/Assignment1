@@ -12,6 +12,7 @@ DB_NAME = os.getenv('DB_NAME')
 USERNAME = 'root'
 
 def checkSQL(filename):
+    #Connect to mysql and run the mysql script
     conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, charset='utf8')
     cursor = conn.cursor()
     fd = open(filename, 'r')
@@ -23,7 +24,7 @@ def checkSQL(filename):
         if command.strip() != '':
             cursor.execute(command)
             conn.commit()
-    #insert items
+    #insert items and products from json file
     json_items_data = open('items.json').read()
     json_items = json.loads(json_items_data)
     json_products_data = open('products.json').read()
@@ -46,7 +47,7 @@ def checkSQL(filename):
             print(product_warranty)
             cursor.execute('insert into bt2102.product(id, category, model, price, warranty) value(%s, %s, %s, %s, %s)', (productID, product_category, product_model, product_price, product_warranty))
         conn.commit()
-
+    #Add product id into the item table in mysql
         ca1 = ["Light1", "Light2", "SmartHome1"]
         ca2 = ["Safe1", "Safe2", "Safe3", "SmartHome1"]
         for i in range(len(ca1)):

@@ -63,14 +63,15 @@ def searchfordetail(c, f, ifCategory, ifCustomer, itemSearch):
             dic},
         {'$group': {"_id" : {"Category": "$Category", "Model":"$Model", "Warranty": "$combine.Warranty (months)","Cost": "$combine.Cost ($)",
                              "Price": "$combine.Price ($)"},
-                    "Inventory": { "$sum": {'$cond' : {'if' : {'$eq' : ['$PurchaseStatus' , 'Sold']}, 'then' : 1, 'else' : 0}}}, 
-                    'Sold Items' : { "$sum": {'$cond' : {'if' : {'$eq' : ['$PurchaseStatus' , 'Unsold']}, 'then' : 1, 'else' : 0}}}}},
+                    "Inventory": { "$sum": {'$cond' : {'if' : {'$eq' : ['$PurchaseStatus' , 'Unsold']}, 'then' : 1, 'else' : 0}}}, 
+                    'Sold Items' : { "$sum": {'$cond' : {'if' : {'$eq' : ['$PurchaseStatus' , 'Sold']}, 'then' : 1, 'else' : 0}}}}},
         {'$project': {"_id":0, "Category":"$_id.Category", "Model":"$_id.Model", "Warranty": "$_id.Warranty","Cost": "$_id.Cost",
-                             "Price": "$_id.Price", "Inventory_level":"$Inventory"}},
+                             "Price": "$_id.Price", "Inventory_level":"$Inventory", 'Sold Items' : '$Sold Items'}},
         {'$sort' : {"Category" :1}}
         ])
 
     resultListI = list(listI)
     return resultListI
+# print(searchfordetail("Lights", {}, True, False, False))
 
 

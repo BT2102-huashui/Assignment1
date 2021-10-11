@@ -93,7 +93,7 @@ class Administrator(object):
         cursor = conn.cursor()
         try:
             sql1 = "USE " + DB_NAME
-            sql2 = """SELECT customer_id, name, fee_amount, phone_number, address, email_address
+            sql2 = """SELECT r.id, customer_id, name, fee_amount, phone_number, address, email_address
                         FROM request AS r, customer AS c
                         WHERE customer_id = c.id AND request_status ='Sub and Wait'
                         ORDER BY customer_id, name"""
@@ -152,9 +152,6 @@ class Administrator(object):
 
     def A_categories_Search(self, c, f):
         return searchfordetail(c, f, True, False, False)
-
-    
-#print(Administrator().A_ID_Search("1001"))
-#print(Administrator().A_models_Search("Light1",{}))
-
+# print(Administrator().A_models_Search("Light1",{}))
+# Administrator().items_under_service()
 

@@ -16,7 +16,7 @@ class Request(object):
         """
         sql1 = sql1.format(userid)
         cursor.execute(sql1)
-        items = cursor.fetchall()
+        items = list(map(lambda x:x[0], cursor.fetchall()))
         if int(itemid) in items:
             sql3 = """
             SELECT purchase_date, product_id
@@ -38,10 +38,10 @@ class Request(object):
             warranty = cursor.fetchone()[0]
             current_date = datetime.date.today().strftime('%Y-%m-%d')
             ifinwarranty = self.ifwarranty(purchase_date, current_date, warranty)
-            if ifinwarranty:  # purchase status lack
+            if ifinwarranty:
                 sql2 = """
                 INSERT request (date, request_status, service_status, customer_id, item_id, fee_amount) 
-                VALUES(CURDATE(), 'Progress', 'Progress', {}, {}, 0)
+                VALUES(CURDATE(), 'Submit', 'Waiting', {}, {}, 0)
                 """
                 sql2 = sql2.format(userid, itemid)
                 cursor.execute(sql2)
@@ -54,7 +54,7 @@ class Request(object):
                 INSERT request (date, request_status, service_status, customer_id, item_id, fee_amount) 
                 VALUES(now(), 'Sub and Wait', 'Waiting', {}, {}, {})
                 """
-                fee = self.calculateFee(itemid)  # write a function to calculate
+                fee = self.calculateFee(itemid)
                 sql2 = sql2.format(userid, itemid, fee)
                 cursor.execute(sql2)
                 conn.commit()
@@ -97,35 +97,36 @@ class Request(object):
         return 40 + 0.2 * price
 
 
-    def payment(self, requestid):
+    def payment(self, requestid, userid):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                            charset='utf8')
         cursor = conn.cursor()
         sql = """
         UPDATE request
-        SET request_status = 'Progress', service_status = 'Progress', payment_date = now()
-        WHERE id = {}
+        SET request_status = 'Progress', service_status = 'Waiting', payment_date = now(), fee_amount = 0
+        WHERE id = {} AND customer_id = {}
         """
-        sql = sql.format(requestid)
+        sql = sql.format(requestid, userid)
         cursor.execute(sql)
         conn.commit()
         conn.close()
-        return print("Payment successful")
+        return "Payment successful"
 
-    def cancel(self, requestid):
+    def cancel(self, requestid, userid):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                            charset='utf8')
         cursor = conn.cursor()
+
         sql = """
         UPDATE request
         SET request_status = 'Cancel', service_status = 'Completed'
-        WHERE id = {}
+        WHERE id = {} AND customer_id = {}
         """
-        sql = sql.format(requestid)
+        sql = sql.format(requestid, userid)
         cursor.execute(sql)
         conn.commit()
         conn.close()
-        return print("Request cancelled")
+        return "Request cancelled"
 
     def approve(self, requestid, adminid):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
@@ -134,7 +135,7 @@ class Request(object):
         sql0 = """
         SELECT id
         FROM request
-        WHERE request_status = 'Progress'
+        WHERE request_status = 'Progress' OR 'Submit'
         """
         cursor.execute(sql0)
         requests = list(map(lambda x:x[0], cursor.fetchall()))
@@ -142,7 +143,7 @@ class Request(object):
             return "Request cannot be approved"
         sql = """
                 UPDATE request
-                SET request_status = 'Approved', admin_id = {}
+                SET request_status = 'Approved', service_status = 'Progress', admin_id = {}
                 WHERE id = {}
                 """
         sql = sql.format(adminid, requestid)
@@ -184,7 +185,7 @@ class Request(object):
                                charset='utf8')
         cursor = conn.cursor()
         sql1 = """
-                SELECT id, item_id, service_status
+                SELECT id, item_id, service_status, fee_amount
                 FROM request
                 WHERE customer_id = {}
                 """
@@ -215,3 +216,4 @@ class Request(object):
 # Request().cancel(6)
 # Request().all_items(1)
 # Request().approve('1', '1')
+# print(Request().submit_request('1', '1001'))

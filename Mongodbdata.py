@@ -45,6 +45,7 @@ def loadMongoDb():
     myItems.update_many({"PurchaseStatus":"Sold"}, {"$set":{"CustomerID": "12"}}) ##This is for data given
 
 
-    myItems.update_many({"PurchaseStatus":"Sold"}, {"$set":{"CustomerID": "12"}})
+
+    myItems.update_many({"PurchaseStatus":"Sold"}, {"$set":{"CustomerID": "12"}}) ##This is for data given
 
 
