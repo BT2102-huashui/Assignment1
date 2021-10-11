@@ -147,7 +147,7 @@ class Search_Admin_Page(tk.Toplevel): #After Admin-Login
         tk.Button(self, text="Display the sold items", font=("Arial", 12), width=20, height=1, command=self.display_items).pack()
         tk.Button(self, text="Items under service", font=("Arial", 12), width=20, height=1, command=self.under_service_items).pack()
         tk.Button(self, text="Customers with fee", font=("Arial", 12), width=20, height=1, command=self.customers_with_fee).pack()
-        tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
+        tk.Button(self, text="Close", font=("Arial", 12), width=11, height=1, command=self.close).pack()
 
     def close(self):
         self.destroy()
@@ -357,7 +357,7 @@ class Search_Admin_Page2(tk.Toplevel):
         self.end_pricentry.pack()
 
         tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1, command=self.display).pack()
-        tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
+        tk.Button(self, text="Close", font=("Arial", 12), width=11, height=1, command=self.close).pack()
 
     def addfilter(self):
         x ={}
@@ -430,23 +430,26 @@ class Display_Search_Page(tk.Toplevel):
         self.geometry('%dx%d+%d+%d' % (2*WIDTH, HEIGHT, x, y))
 
         result = self.master.results
+        if len(result) == 0:
+            messagebox.showinfo("showinfo", "No results, please change the filters!")
+            self.close()
+        else:
+            length = ()
+            for i in range(len(result[0].items())):
+                length += (i+1,)
+            tv = ttk.Treeview(self, columns=length, show = 'headings', height=8)
+            for i in length:
+                tv.column(i, anchor=tk.CENTER, width=100)
+            headings = list(result[0].keys())
+            for i in range(len(result[0].items())):
+                tv.heading(i+1, text=headings[i])
 
-        length = ()
-        for i in range(len(result[0].items())):
-            length += (i+1,)
-        tv = ttk.Treeview(self, columns=length, show = 'headings', height=8)
-        for i in length:
-            tv.column(i, anchor=tk.CENTER, width=100)
-        headings = list(result[0].keys())
-        for i in range(len(result[0].items())):
-            tv.heading(i+1, text=headings[i])
+            for i in range(len(result)):
+                row = tuple(result[i].values())
+                tv.insert(parent='', index=i+1, iid=i+1, values=row)
+            tv.pack()
 
-        for i in range(len(result)):
-            row = tuple(result[i].values())
-            tv.insert(parent='', index=i+1, iid=i+1, values=row)
-        tv.pack()
-
-        tk.Button(self, text="Close", font=("Arial", 12), width=12, height=1, command=self.close).pack()
+            tk.Button(self, text="Close", font=("Arial", 12), width=12, height=1, command=self.close).pack()
     
     def close(self):
         self.destroy()

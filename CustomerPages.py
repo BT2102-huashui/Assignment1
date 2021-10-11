@@ -278,7 +278,7 @@ class Search_Cust_Page(tk.Toplevel):#After customer page
 
         
         tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1, command=self.showResult).pack()
-        tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
+        tk.Button(self, text="Close", font=("Arial", 12), width=11, height=1, command=self.close).pack()
     
     def close(self):
         self.destroy()
