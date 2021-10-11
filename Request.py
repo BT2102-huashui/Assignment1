@@ -38,7 +38,7 @@ class Request(object):
             warranty = cursor.fetchone()[0]
             current_date = datetime.date.today().strftime('%Y-%m-%d')
             ifinwarranty = self.ifwarranty(purchase_date, current_date, warranty)
-            if ifinwarranty:  # purchase status lack
+            if ifinwarranty:
                 sql2 = """
                 INSERT request (date, request_status, service_status, customer_id, item_id, fee_amount) 
                 VALUES(CURDATE(), 'Progress', 'Progress', {}, {}, 0)
@@ -54,7 +54,7 @@ class Request(object):
                 INSERT request (date, request_status, service_status, customer_id, item_id, fee_amount) 
                 VALUES(now(), 'Sub and Wait', 'Waiting', {}, {}, {})
                 """
-                fee = self.calculateFee(itemid)  # write a function to calculate
+                fee = self.calculateFee(itemid)
                 sql2 = sql2.format(userid, itemid, fee)
                 cursor.execute(sql2)
                 conn.commit()
@@ -216,4 +216,4 @@ class Request(object):
 # Request().cancel(6)
 # Request().all_items(1)
 # Request().approve('1', '1')
-print(Request().submit_request('1', '1001'))
+# print(Request().submit_request('1', '1001'))

@@ -173,11 +173,11 @@ class Search_Result_Page(tk.Toplevel):#After search page
         
         self.title('Search Result')
 
-        # wid_screen = self.winfo_screenwidth()
-        # height_screen = self.winfo_screenheight()
-        # x = (wid_screen/2) - (WIDTH/2)
-        # y = (height_screen/2) - (HEIGHT2/2)
-        # self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT2, x, y))
+        wid_screen = self.winfo_screenwidth()
+        height_screen = self.winfo_screenheight()
+        x = (wid_screen/2) - (2*WIDTH/2)
+        y = (height_screen/2) - (HEIGHT2/2)
+        self.geometry('%dx%d+%d+%d' % (2*WIDTH, HEIGHT2, x, y))
 
         tv = ttk.Treeview(self, columns=(1, 2, 3, 4, 5), show = 'headings', height=8)
 
@@ -204,6 +204,7 @@ class Search_Result_Page(tk.Toplevel):#After search page
         self.MorCentry.pack()
 
         tk.Button(self, text="Purchase", font=("Arial", 12), width=12, height=1, command=self.purchase).pack()
+        tk.Button(self, text="Close", font=("Arial", 12), width=12, height=1, command=self.close).pack()
 
     def purchase(self):
         C = Customer()
@@ -222,6 +223,8 @@ class Search_Result_Page(tk.Toplevel):#After search page
         else:
             messagebox.showwarning("showwarning", str(p) + "is purchased by" + self.master.userid  )
             C.purchaseDB(p, self.master.userid)
+    def close(self):
+        self.destroy()
 
 class Search_Cust_Page(tk.Toplevel):#After customer page
     def __init__(self, master, userid) -> None:

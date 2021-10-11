@@ -8,7 +8,7 @@ from CustomerPages import *
 WIDTH = 500
 HEIGHT = 350
 HEIGHT2 = 500
-
+#The main page when open the OSHES
 class Main_Page(tk.Tk):
     def __init__(self) -> None:
         super().__init__()

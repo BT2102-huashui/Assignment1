@@ -9,7 +9,7 @@ WIDTH = 500
 HEIGHT = 350
 HEIGHT2 = 550
 
-
+#These are pages for admin
 class Login_Admin_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
@@ -194,8 +194,6 @@ class Display_Item_Page(tk.Toplevel):
             table.insert(parent='', index=i, iid=i, text='', values=values[i])
         table.pack()
         tk.Button(self, text="Close", font=("Arial", 12), width=11, height=1, command=self.close).pack()
-        # tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1).pack()
-        # tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
     
     def close(self):
         self.destroy()
@@ -243,6 +241,7 @@ class Under_Service_Page(tk.Toplevel):
         self.itementry = tk.Entry(self, textvariable=self.item)
         self.itementry.pack()
         tk.Button(self, text="Serve", font=("Arial", 12), width=11, height=1, command=self.serve).pack()
+        tk.Button(self, text="Refresh", font=("Arial", 12), width=12, height=1, command=self.refresh).pack()
         tk.Button(self, text="Close", font=("Arial", 12), width=11, height=1, command=self.close).pack()
     
     def approve(self):
@@ -250,11 +249,16 @@ class Under_Service_Page(tk.Toplevel):
         mess = Request().approve(requestid, self.userid)
         messagebox.showinfo("showinfo", mess)
         self.requestentry.delete(0, tk.END)
+        
     def serve(self):
         requestid = self.item.get()
         mess = Request().complete(requestid, self.userid)
         messagebox.showinfo("showinfo", mess)
         self.itementry.delete(0, tk.END)
+        
+    def refresh(self):
+        Under_Service_Page(self.master, self.userid)
+        self.close()
 
     def close(self):
         self.destroy()
@@ -318,7 +322,7 @@ class Search_Admin_Page2(tk.Toplevel):
         self.ItemIDentry.pack()
 
         self.label1 = tk.Label(self, text="Search By").pack()
-        self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model", "ItemID"))
+        self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model"))
         self.searchby.pack()
 
         self.label7 = tk.Label(self, text="Category/Model Name").pack()
@@ -352,7 +356,6 @@ class Search_Admin_Page2(tk.Toplevel):
         self.label6 = tk.Label(self, text="End Price").pack()
         self.end_pricentry.pack()
 
-        
         tk.Button(self, text="Search", font=("Arial", 12), width=11, height=1, command=self.display).pack()
         tk.Button(self, text="Exit", font=("Arial", 12), width=11, height=1, command=self.close).pack()
 
@@ -405,17 +408,8 @@ class Search_Admin_Page2(tk.Toplevel):
         else:
             result = A.A_ID_Search(self.ItemID.get(), dic)
 
-        ans = ""
-        for i in range(len(result)):
-            ans += str(i) + '\n'
-            for key in result[i]:
-                ans += key + " : " + str(result[i][key]) +"\n"
-            
-        #anstext = tk.Label(self, text=ans, font=("Calibri", 10)).pack()
-        #tk.Label(self, text=self.searchby.get(), font=("Calibri", 20)).pack()
-        #print(dic)
         return result
-    
+
     def display(self):
         self.results = self.search()
         Display_Search_Page(self)
@@ -431,18 +425,28 @@ class Display_Search_Page(tk.Toplevel):
 
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
-        x = (wid_screen/2) - (WIDTH/2)
+        x = (wid_screen/2) - (2*WIDTH/2)
         y = (height_screen/2) - (HEIGHT/2)
-        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT, x, y))
+        self.geometry('%dx%d+%d+%d' % (2*WIDTH, HEIGHT, x, y))
 
         result = self.master.results
-        #tk.Label(self, text="test", font=("Calibri", 10)).pack()
-        ans = ""
+
+        length = ()
+        for i in range(len(result[0].items())):
+            length += (i+1,)
+        tv = ttk.Treeview(self, columns=length, show = 'headings', height=8)
+        for i in length:
+            tv.column(i, anchor=tk.CENTER, width=100)
+        headings = list(result[0].keys())
+        for i in range(len(result[0].items())):
+            tv.heading(i+1, text=headings[i])
+
         for i in range(len(result)):
-            ans += str(i+1) + ': \n'
-            for key in result[i]:
-                ans += key + " : " + str(result[i][key]) +"\n"
-        tk.Label(self, text=ans, font=("Calibri", 15)).pack()
+            row = tuple(result[i].values())
+            tv.insert(parent='', index=i+1, iid=i+1, values=row)
+        tv.pack()
+
+        tk.Button(self, text="Close", font=("Arial", 12), width=12, height=1, command=self.close).pack()
     
     def close(self):
         self.destroy()

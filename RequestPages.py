@@ -16,8 +16,8 @@ class Request_Page(tk.Toplevel):
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
         x = (wid_screen/2) - (WIDTH/2)
-        y = (height_screen/2) - (HEIGHT/2)
-        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT, x, y))
+        y = (height_screen/2) - (HEIGHT2/2)
+        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT2, x, y))
 
         #Submit Request
         self.itemid = tk.StringVar()
@@ -37,7 +37,7 @@ class Request_Page(tk.Toplevel):
         self.payidentry = tk.Entry(self, textvariable=self.payid)
         self.payidentry.pack()
         tk.Button(self, text="Submit", font=("Arial", 12), width=12, height=1, command=self.pay).pack()
-        #tk.Button(self, text="Track my requests", font=("Arial", 12), width=12, height=1, command=self.track).pack()
+        tk.Button(self, text="Refresh", font=("Arial", 12), width=12, height=1, command=self.refresh).pack()
 
         tv = ttk.Treeview(self, columns=(1, 2, 3, 4), show = 'headings', height=8)
 
@@ -61,19 +61,26 @@ class Request_Page(tk.Toplevel):
         if result[0] == 0 or 1:
             messagebox.showinfo("showinfo", result[1])
             self.itemidentry.delete(0, tk.END)
+            self.refresh()
         else:
-            return result[1]
+            messagebox.showinfo("showinfo", result[1])
+            self.refresh()
     
     def cancel(self):
         requestid = self.requestid.get()
         mess = Request().cancel(requestid, self.customerid)
         messagebox.showinfo("showinfo", mess)
+        
 
     def pay(self):
         requestid = self.payid.get()
         mess = Request().payment(requestid, self.customerid)
         messagebox.showinfo("showinfo", mess)
+        
 
+    def refresh(self):
+        Request_Page(self.master, self.customerid)
+        self.destroy()
 
 class See_items_buy(tk.Toplevel):
     def __init__(self, master, customerid) -> None:
@@ -84,9 +91,9 @@ class See_items_buy(tk.Toplevel):
         
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
-        x = (wid_screen/2) - (WIDTH/2)
+        x = (wid_screen/2) - (2*WIDTH/2)
         y = (height_screen/2) - (HEIGHT/2)
-        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT, x, y))
+        self.geometry('%dx%d+%d+%d' % (2*WIDTH, HEIGHT, x, y))
 
         tv = ttk.Treeview(self, columns=(1, 2, 3, 4, 5), show = 'headings', height=8)
 
