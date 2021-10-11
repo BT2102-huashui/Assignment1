@@ -47,7 +47,7 @@ class Request_Page(tk.Toplevel):
         tv.column(4, anchor=tk.CENTER, width=100)
         tv.heading(1, text='Request ID')
         tv.heading(2, text='Item ID')
-        tv.heading(3, text='Service Status')
+        tv.heading(3, text='Request Status')
         tv.heading(4, text='Fee Amount')
 
         result = Request().track(int(self.customerid))

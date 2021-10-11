@@ -123,21 +123,22 @@ class Request(object):
         FROM request
         WHERE customer_id = {} AND fee_amount > 0
         """
-        sql1 = """
-        UPDATE request
-        SET service_status = 'Completed', request_status = 'Cancel', fee_amount = 0
-        WHERE id = {}
-        """
         sql = sql.format(userid)
         cursor.execute(sql)
         results = list(map(lambda x : x[:2], cursor.fetchall()))
         today = date.today()
         for i in results:
             first_date = i[1]
+            sql1 = """
+            UPDATE request
+            SET service_status = 'Completed', request_status = 'Cancel', fee_amount = 0
+            WHERE id = {}
+            """
             if (today - first_date).days >= 10:
                 sql1 = sql1.format(i[0])
                 cursor.execute(sql1)
-                cursor.commit()
+                conn.commit()
+        conn.close()
             
 
     def cancel(self, requestid, userid):
@@ -226,7 +227,7 @@ class Request(object):
                                charset='utf8')
         cursor = conn.cursor()
         sql1 = """
-                SELECT id, item_id, service_status, fee_amount
+                SELECT id, item_id, request_status, fee_amount
                 FROM request
                 WHERE customer_id = {}
                 """

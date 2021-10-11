@@ -92,18 +92,19 @@ class Administrator(object):
                                 charset='utf8')
         cursor = conn.cursor()
         try:
-            sql1 = "USE " + DB_NAME
-            sql2 = """SELECT r.id, customer_id, name, fee_amount, phone_number, address, email_address
-                        FROM request AS r, customer AS c
-                        WHERE customer_id = c.id AND request_status ='Sub and Wait'
+            sql2 = """SELECT r.id, r.customer_id, c.name, r.fee_amount, c.phone_number, c.address, c.email_address
+                        FROM customer AS c
+                        LEFT JOIN request AS r
+                        ON customer_id = c.id
+                        WHERE request_status ='Sub and Wait'
                         ORDER BY customer_id, name"""
-            cursor.execute(sql1)
             cursor.execute(sql2)
-            cursor.close()
             results = cursor.fetchall()
+            print(results)
+            conn.close()
             return results
         except:
-            cursor.close()
+            conn.close()
             return "Error: unable to fecth data"
 
     def items_under_service(self):
@@ -155,4 +156,5 @@ class Administrator(object):
 
 # print(Administrator().A_models_Search("Light1",{}))
 # Administrator().items_under_service()
+# Administrator().customers_with_fee_unpaid()
 

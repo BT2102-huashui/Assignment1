@@ -4,6 +4,7 @@ from RequestPages import *
 from tkinter import StringVar, messagebox, ttk
 from Customers import *
 from Admins import *
+from Request import *
 
 WIDTH = 500
 HEIGHT = 350
@@ -153,6 +154,7 @@ class Cust_Page(tk.Toplevel):
         tk.Button(self, text="Search", font=("Arial", 12), width=12, height=1, command=self.search).pack()
     
     def request(self):
+        Request().update_cancel(self.userid)
         Request_Page(self, self.userid)
 
     def allItems(self):
