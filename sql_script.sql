@@ -31,8 +31,7 @@ CREATE TABLE IF NOT EXISTS bt2102.item (
     purchase_date DATE DEFAULT NULL,
     customer_id INT DEFAULT NULL,
     admin_id INT DEFAULT NULL,
-    FOREIGN KEY (customer_id) REFERENCES customer(id),
-    FOREIGN KEY (admin_id) REFERENCES administrator(id)
+    FOREIGN KEY (customer_id) REFERENCES customer(id)
 );
 CREATE TABLE IF NOT EXISTS bt2102.request (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
