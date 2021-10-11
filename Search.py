@@ -47,7 +47,7 @@ def searchfordetail(c, f, ifCategory, ifCustomer, itemSearch):
             }
         },{'$match':
             dic},
-        {'$project': { "_id":0, "Category":1, "Model":1, "Color":1, "PurchaseStatus":1, "CustomerID":1, "Color": 1, "Factory": 1,
+        {'$project': { "_id":0,"ItemID":1, "Category":1, "Model":1, "Color":1, "PurchaseStatus":1, "CustomerID":1, "Color": 1, "Factory": 1,
                                        "PowerSupply" : 1, "ProductionYear" :1,
                        "Warranty":"$combine.Warranty (months)" , "Cost": "$combine.Cost ($)"}}
         ])

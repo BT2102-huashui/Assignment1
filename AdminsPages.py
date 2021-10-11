@@ -315,7 +315,7 @@ class Search_Admin_Page2(tk.Toplevel):
         self.ItemIDentry.pack()
         
         self.label1 = tk.Label(self, text="Search By").pack()
-        self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model", "ItemID"))
+        self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model"))
         self.searchby.pack()
 
         self.label7 = tk.Label(self, text="value").pack()
@@ -440,7 +440,7 @@ class Display_Search_Page(tk.Toplevel):
             for key in result[i]:
                 ans += key + " : " + str(result[i][key]) +"\n"
 
-        tk.Label(self, text=ans, font=("Calibri", 15)).pack()
+        tk.Label(self, text=ans, font=("Calibri", 10)).pack()
 
     
     def close(self):
