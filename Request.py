@@ -41,7 +41,7 @@ class Request(object):
             if ifinwarranty:
                 sql2 = """
                 INSERT request (date, request_status, service_status, customer_id, item_id, fee_amount) 
-                VALUES(CURDATE(), 'Progress', 'Progress', {}, {}, 0)
+                VALUES(CURDATE(), 'Submit', 'Waiting', {}, {}, 0)
                 """
                 sql2 = sql2.format(userid, itemid)
                 cursor.execute(sql2)
@@ -103,7 +103,7 @@ class Request(object):
         cursor = conn.cursor()
         sql = """
         UPDATE request
-        SET request_status = 'Progress', service_status = 'Progress', payment_date = now(), fee_amount = 0
+        SET request_status = 'Progress', service_status = 'Waiting', payment_date = now(), fee_amount = 0
         WHERE id = {} AND customer_id = {}
         """
         sql = sql.format(requestid, userid)
@@ -135,7 +135,7 @@ class Request(object):
         sql0 = """
         SELECT id
         FROM request
-        WHERE request_status = 'Progress'
+        WHERE request_status = 'Progress' OR 'Submit'
         """
         cursor.execute(sql0)
         requests = list(map(lambda x:x[0], cursor.fetchall()))
@@ -143,7 +143,7 @@ class Request(object):
             return "Request cannot be approved"
         sql = """
                 UPDATE request
-                SET request_status = 'Approved', admin_id = {}
+                SET request_status = 'Approved', service_status = 'Progress', admin_id = {}
                 WHERE id = {}
                 """
         sql = sql.format(adminid, requestid)
