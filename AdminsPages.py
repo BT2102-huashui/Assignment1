@@ -14,7 +14,7 @@ class Login_Admin_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
         self.master = master
-        self.title("Login the system as admin")
+        self.title("Welcome to OSHES system, administrator!")
 
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()

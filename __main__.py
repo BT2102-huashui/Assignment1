@@ -3,13 +3,15 @@ import sys
 sys.path.append(os.getcwd())
 import pymysql
 import json
+import pymongo
+from Mongodbdata import loadMongoDb
 from dotenv import load_dotenv
 load_dotenv()
 
 MY_SQL_PASSWORD = os.getenv('MY_SQL_PASSWORD')
 SQL_FILE = os.getenv('SQL_FILE')
 DB_NAME = os.getenv('DB_NAME')
-USERNAME = 'root'
+USERNAME = 'user1'
 
 def checkSQL(filename):
     #Connect to mysql and run the mysql script
@@ -44,7 +46,6 @@ def checkSQL(filename):
             product_model = product.get('Model')
             product_price = product.get('Price ($)')
             product_warranty = product.get('Warranty (months)')
-            print(product_warranty)
             cursor.execute('insert into bt2102.product(id, category, model, price, warranty) value(%s, %s, %s, %s, %s)', (productID, product_category, product_model, product_price, product_warranty))
         conn.commit()
     #Add product id into the item table in mysql
@@ -70,8 +71,14 @@ def checkSQL(filename):
     except:
         conn.close()
 
+def checkMongo():
+    client = pymongo.MongoClient()
+    dbExist = client.list_database_names()
+    if "inventory" not in dbExist:
+        loadMongoDb()
 
 if __name__ == "__main__":
+    checkMongo()
     checkSQL(SQL_FILE)
     from MainPages import Main_Page
     Main_Page().mainloop()

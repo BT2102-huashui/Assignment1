@@ -153,7 +153,8 @@ class Request(object):
         """
         sql0 = sql0.format(userid)
         cursor.execute(sql0)
-        ids = list(map(lambda x : x[0], sql0))
+        results = cursor.fetall()
+        ids = list(map(lambda x : x[0], results))
         if int(requestid) in ids:
             conn.close()
             return "Cannot cancel the request that has been approved"
@@ -177,7 +178,7 @@ class Request(object):
         sql0 = """
         SELECT id
         FROM request
-        WHERE request_status = 'Progress' OR 'Submit'
+        WHERE request_status = 'Progress' OR request_status = 'Submit'
         """
         cursor.execute(sql0)
         requests = list(map(lambda x:x[0], cursor.fetchall()))
@@ -242,7 +243,7 @@ class Request(object):
                                charset='utf8')
         cursor = conn.cursor()
         sql1 = """
-        SELECT id, category, model, product_id, purchase_date
+        SELECT *
         FROM item
         WHERE customer_id = {}
         """
@@ -259,4 +260,4 @@ class Request(object):
 # Request().all_items(1)
 # Request().approve('1', '1')
 # print(Request().submit_request('1', '1001'))
-Request().update_cancel('1')
+# Request().update_cancel('1')

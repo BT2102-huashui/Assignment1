@@ -135,18 +135,18 @@ class Customer:
             }
         },{'$match':
             {"CustomerID":userid}},
-        {'$project': { "_id":0, "Category":1, "Model":1, "Color":1, "PurchaseStatus":1, "CustomerID":1, "Color": 1, "Factory": 1,
+        {'$project': { "_id":0, "Category":1, "Model":1, "Color":1, "ItemID":1, "Color": 1, "Factory": 1,
                                        "PowerSupply" : 1, "ProductionYear" :1,
-                       "Warranty":"$combine.Warranty (months)" , "Cost": "$combine.Cost ($)"}}
+                       "Warranty":"$combine.Warranty (months)"}}
                 
         ])
 
-        resultlist = list(listI)[0]
+        resultlist = list(listI)
         return resultlist
 
 
         
 
-#Customer().registration("03", "1221")
+#print(Customer().purchasedList('1'))
 #print(Customer().C_categories_Search("Lights", {}))
 #print(Customer().purchase({"Color": "White"}))

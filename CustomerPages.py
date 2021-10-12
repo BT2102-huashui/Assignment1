@@ -1,7 +1,7 @@
 from os import X_OK
 import tkinter as tk
 from RequestPages import *
-from tkinter import StringVar, messagebox, ttk
+from tkinter import Message, StringVar, messagebox, ttk
 from Customers import *
 from Admins import *
 from Request import *
@@ -14,7 +14,7 @@ class Login_Cust_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
         self.master = master
-        self.title("Login the system")
+        self.title("Welcome to OSHES system, administrator!")
         
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
@@ -61,7 +61,7 @@ class Register_Cust_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
         self.master = master
-        self.master.title("Register Page")
+        self.master.title("Registration Page")
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
         x = (wid_screen/2) - (WIDTH/2)
@@ -141,7 +141,7 @@ class Cust_Page(tk.Toplevel):
         self.master = master
         self.userid = userid
         self.master.destroy()
-        self.title("Customer Page")
+        self.title("Welcome to OSHES system, customer!")
         
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
@@ -194,7 +194,7 @@ class Search_Result_Page(tk.Toplevel):#After search page
         elif self.master.searchby.get()== "Model":
             self.label7 = tk.Label(self, text="which category do you want").pack()
         else:
-            print("no searchby")
+            messagebox.showwarning("showwarning", "no searchby")
 
 
         for i in range(len(result)):
@@ -219,11 +219,10 @@ class Search_Result_Page(tk.Toplevel):#After search page
             
 
         p = C.purchase(requirement)
-        print(requirement)
         if p == None:
             messagebox.showwarning("showwarning", "No such item exists.")
         else:
-            messagebox.showwarning("showwarning", str(p) + "is purchased by" + self.master.userid  )
+            messagebox.showwarning("showwarning", str(p) + " is purchased by" + self.master.userid  )
             C.purchaseDB(p, self.master.userid)
     def close(self):
         self.destroy()

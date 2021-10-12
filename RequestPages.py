@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import StringVar, messagebox, ttk
+from Customers import *
 from Request import *
 
 WIDTH = 500
@@ -95,21 +96,21 @@ class See_items_buy(tk.Toplevel):
         y = (height_screen/2) - (HEIGHT/2)
         self.geometry('%dx%d+%d+%d' % (2*WIDTH, HEIGHT, x, y))
 
-        tv = ttk.Treeview(self, columns=(1, 2, 3, 4, 5), show = 'headings', height=8)
+        tv = ttk.Treeview(self, columns=(1, 2, 3, 4, 5, 6, 7, 8), show = 'headings', height=8)
+        result = Customer().purchasedList(self.customerid)
 
-        tv.column(1, anchor=tk.CENTER, width=100)
-        tv.column(2, anchor=tk.CENTER, width=100)
-        tv.column(3, anchor=tk.CENTER, width=100)
-        tv.column(4, anchor=tk.CENTER, width=100)
-        tv.column(5, anchor=tk.CENTER, width=100)
-        tv.heading(1, text='Item ID')
-        tv.heading(2, text='Category')
-        tv.heading(3, text='Model')
-        tv.heading(4, text='Product ID')
-        tv.heading(5, text='Purchase Date')
-        result = Request().all_items(int(self.customerid))
+        length = (1, 2, 3, 4, 5, 6, 7, 8)
+        for i in length:
+            tv.column(i, anchor=tk.CENTER, width=100)
+        
+        headings = list(result[0].keys())
+        for i in range(len(result[0].items())):
+            tv.heading(i+1, text=headings[i])
+
         for i in range(len(result)):
-            tv.insert(parent='', index=i, iid=i, values=result[i])
+            row = tuple(result[i].values())
+            tv.insert(parent='', index=i+1, iid=i+1, values=row)
+
         tv.pack()
 
         tk.Button(self, text="Close", font=("Arial", 12), width=12, height=1, command=self.close).pack()

@@ -23,9 +23,9 @@ class Main_Page(tk.Tk):
         tk.Label(text="Login and Registeration", font=("Calibri", 20)).pack()
         tk.Button(self, text="Admins Login", font=("Arial", 12), width=12, height=1, command=self.call_admin_login).pack()
         tk.Button(self, text="Customer Login", font=("Arial", 12), width=12, height=1, command=self.call_cust_login).pack()
-        tk.Button(self, text="Register as administrators", font=("Arial", 12), width=18, height=1, command=self.call_admin_regis).pack()
-        tk.Button(self, text="Register as customers", font=("Arial", 12), width=18, height=1, command=self.call_cust_regis).pack()
-        tk.Button(self, text="Close", font=("Arial", 12), width=18, height=1, command=self.close).pack()
+        tk.Button(self, text="Register as administrators", font=("Arial", 12), width=22, height=1, command=self.call_admin_regis).pack()
+        tk.Button(self, text="Register as customers", font=("Arial", 12), width=22, height=1, command=self.call_cust_regis).pack()
+        tk.Button(self, text="Close", font=("Arial", 12), width=12, height=1, command=self.close).pack()
 
     def call_admin_login(self):
         Login_Admin_Page(self)
