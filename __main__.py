@@ -11,7 +11,7 @@ load_dotenv()
 MY_SQL_PASSWORD = os.getenv('MY_SQL_PASSWORD')
 SQL_FILE = os.getenv('SQL_FILE')
 DB_NAME = os.getenv('DB_NAME')
-USERNAME = 'user1'
+USERNAME = 'root'
 
 def checkSQL(filename):
     #Connect to mysql and run the mysql script
