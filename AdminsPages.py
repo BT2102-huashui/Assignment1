@@ -207,7 +207,7 @@ class Under_Service_Page(tk.Toplevel):
         y = (height_screen/2) - (HEIGHT2/2)
         self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT2, x, y))
 
-        tk.Label(self, text="Items Sold and Unsold", font=("Calibri", 20)).pack()
+        tk.Label(self, text="Display the Items Under Service", font=("Calibri", 20)).pack()
         table = ttk.Treeview(self)
         table["columns"] = ("1", "2", "3", "4")
         table.column('#0', width=0, stretch=tk.NO)

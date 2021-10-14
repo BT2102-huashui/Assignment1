@@ -111,6 +111,8 @@ class Request(object):
         sql0 = sql0.format(requestid)
         cursor.execute(sql0)
         re = cursor.fetchone()
+        if re == None:
+            return "Payment unsuccessful, please check with our customer support."
         if int(requestid) == re[0]:
             sql = """
             UPDATE request
