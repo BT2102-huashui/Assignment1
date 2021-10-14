@@ -46,6 +46,8 @@ class Customer:
             return ("id should be number", False)
         elif not number.isnumeric():
             return ("Phone number should be number", False)
+        elif gender != 'Female' and gender != 'Male':
+            return ('Please key in the correct gender', False)
         sql = "select * from customer where id = '%s'" % userid
         cursor.execute(sql)
         result = cursor.fetchone()
@@ -64,6 +66,8 @@ class Customer:
             conn.close()
             cursor.close()
             return ("Registration successful", True)
+        else:
+            return ('Sth is wrong', False)
 
     def C_categories_Search(self, c, f):
         return searchfordetail(c, f, True, True, False)

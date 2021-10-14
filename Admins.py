@@ -33,10 +33,14 @@ class Administrator(object):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
-        if userid == '':
-            return ('id should not be empty', False)
+        if userid == '' or password == '' or name == '' or gender == '' or number == '':
+            return ('Please fill in all fields', False)
         elif not userid.isnumeric():
             return ("id should be number", False)
+        elif not number.isnumeric():
+            return ("Phone number should be number", False)
+        elif gender != 'Female' and gender != 'Male':
+            return ('Please key in the correct gender', False)
         sql = "select * from administrator where id = '%s'" % userid
         cursor.execute(sql)
         result = cursor.fetchone()
@@ -44,7 +48,7 @@ class Administrator(object):
             conn.close()
             cursor.close()
             return ("User ID exists, please enter a new username.", False)
-        elif password != "" and userid != "":
+        else:
             sql = """
             INSERT INTO administrator(id, password, name, gender, phone_number) values({}, '{}', '{}', '{}', '{}')
             """
@@ -54,12 +58,6 @@ class Administrator(object):
             conn.close()
             cursor.close()
             return ("Registration successful", True)
-        elif not userid.isnumeric():
-            return ('id should be number', False)
-        else:
-            conn.close()
-            cursor.close()
-            return ("Empty password", False)
     
     def product_manage(self):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,

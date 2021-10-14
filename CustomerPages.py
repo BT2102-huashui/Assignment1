@@ -14,7 +14,7 @@ class Login_Cust_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
         self.master = master
-        self.title("Welcome to OSHES system, administrator!")
+        self.title("Welcome to OSHES system!")
         
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
@@ -112,7 +112,7 @@ class Register_Cust_Page(tk.Toplevel):
         self.destroy()
 
     def register_user(self):
-        # try:
+        try:
             userid = self.username.get()
             password = self.password.get()
             name = self.name.get()
@@ -128,8 +128,8 @@ class Register_Cust_Page(tk.Toplevel):
                 self.close()
             else:
                 messagebox.showwarning("showwarning", result[0])
-        # except:
-        #     messagebox.showwarning("showwarning", 'sth is wrong in the register')
+        except:
+            messagebox.showwarning("showwarning", 'sth is wrong')
         # self.usrentry.delete(0, tk.END)
         # self.passentry.delete(0, tk.END)
         # self.namentry.delete(0, tk.END)

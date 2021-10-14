@@ -102,7 +102,7 @@ class Register_Admin_Page(tk.Toplevel):
         self.destroy()
 
     def register_user(self):
-        if self.checkcmbo():
+        try:
             userid = self.username.get()
             password = self.password.get()
             name = self.name.get()
@@ -114,21 +114,13 @@ class Register_Admin_Page(tk.Toplevel):
                 self.close()
             else:
                 messagebox.showwarning("showwarning", result[0])
-        else:
-            messagebox.showwarning("showwarning", result[0])
+        except:
+            messagebox.showwarning("showwarning", 'Sth is wrong')
         # self.usrentry.delete(0, tk.END)
         # self.passentry.delete(0, tk.END)
         # self.namentry.delete(0, tk.END)
         # self.gender.delete(0, tk.END)
-        # self.phonentry.delete(0, tk.END)      
-
-    def checkcmbo(self):
-        if self.gender.get() == "Female":
-            return "Female"
-        elif self.gender.get() == "Male":
-            return "Male"
-        else:
-            return False
+        # self.phonentry.delete(0, tk.END)
     
 class Search_Admin_Page(tk.Toplevel): #After Admin-Login
     def __init__(self, master, userid) -> None:
