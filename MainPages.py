@@ -5,8 +5,8 @@ from Admins import *
 from AdminsPages import *
 from CustomerPages import *
 
-WIDTH = 500
-HEIGHT = 350
+WIDTH = 600
+HEIGHT = 200
 HEIGHT2 = 500
 #The main page when open the OSHES
 class Main_Page(tk.Tk):
@@ -18,9 +18,9 @@ class Main_Page(tk.Tk):
         height_screen = self.winfo_screenheight()
         canva = tk.Canvas(self,width=600, height=150)
         canva.grid(columnspan=2, rowspan=4)
-        x = (wid_screen/2) - (600/2)
-        y = (height_screen/2) - (150/2)
-        self.geometry('%dx%d+%d+%d' % (600, 150, x, y))
+        x = (wid_screen/2) - (WIDTH/2)
+        y = (height_screen/2) - (HEIGHT/2)
+        self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT, x, y))
 
         tk.Label(text="Welcome to \n OSHMS System", font=("Calibri", 20)).grid(column=0, row=1, rowspan=2)
         tk.Button(self, text="Admins Login", font=("Arial", 12), width=22, height=1, command=self.call_admin_login).grid(column=1, row=0)
