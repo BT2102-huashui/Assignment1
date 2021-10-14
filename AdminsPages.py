@@ -73,11 +73,11 @@ class Register_Admin_Page(tk.Toplevel):
         self.name = tk.StringVar()
         self.phone_number = tk.StringVar()
         
-        tk.Label(self, text="Your User ID").pack()
+        tk.Label(self, text="Your User ID*").pack()
         self.usrentry = tk.Entry(self, textvariable=self.username)
         self.usrentry.pack()
 
-        tk.Label(self, text="Password").pack()
+        tk.Label(self, text="Password*").pack()
         self.passentry = tk.Entry(self, textvariable=self.password)
         self.passentry.pack()
 
@@ -92,6 +92,8 @@ class Register_Admin_Page(tk.Toplevel):
         tk.Label(self, text="Phone Number").pack()
         self.phonentry = tk.Entry(self, textvariable=self.phone_number)
         self.phonentry.pack()
+
+        tk.Label(self, text="You must fill in all fields with *").pack()
         
         tk.Button(self, text="Register", font=("Arial", 12), width=15, height=1, command=self.register_user).pack()
         tk.Button(self, text="Close", font=("Arial", 12), width=15, height=1, command=self.close).pack()
