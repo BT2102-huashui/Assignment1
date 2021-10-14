@@ -109,16 +109,16 @@ class Register_Admin_Page(tk.Toplevel):
             result = Administrator().registration(userid, password, name, gender, number)
             if result[1]:
                 messagebox.showinfo("showinfo", result[0])
+                self.close()
             else:
                 messagebox.showwarning("showwarning", result[0])
         else:
-            messagebox.showwarning("showwarning", "Plz fill all the box")
-        self.usrentry.delete(0, tk.END)
-        self.passentry.delete(0, tk.END)
-        self.namentry.delete(0, tk.END)
-        self.gender.delete(0, tk.END)
-        self.phonentry.delete(0, tk.END)
-        self.close()      
+            messagebox.showwarning("showwarning", result[0])
+        # self.usrentry.delete(0, tk.END)
+        # self.passentry.delete(0, tk.END)
+        # self.namentry.delete(0, tk.END)
+        # self.gender.delete(0, tk.END)
+        # self.phonentry.delete(0, tk.END)      
 
     def checkcmbo(self):
         if self.gender.get() == "Female":

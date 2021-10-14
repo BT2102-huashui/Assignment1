@@ -40,6 +40,10 @@ class Customer:
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
+        if userid == "":
+            return ("id should not be empty", False)
+        elif not userid.isnumeric():
+            return ("id should be number", False)
         sql = "select * from customer where id = '%s'" % userid
         cursor.execute(sql)
         result = cursor.fetchone()
@@ -61,7 +65,7 @@ class Customer:
         else:
             conn.close()
             cursor.close()
-            return ("Empty id or password", False)
+            return ("Empty password", False)
 
     def C_categories_Search(self, c, f):
         return searchfordetail(c, f, True, True, False)

@@ -126,14 +126,14 @@ class Register_Cust_Page(tk.Toplevel):
             else:
                 messagebox.showwarning("showwarning", result[0])
         except:
-            messagebox.showwarning("showwarning", "sth wrong")
-        self.usrentry.delete(0, tk.END)
-        self.passentry.delete(0, tk.END)
-        self.namentry.delete(0, tk.END)
-        self.gender.delete(0, tk.END)
-        self.phonentry.delete(0, tk.END)
-        self.emailentry.delete(0, tk.END)
-        self.adressentry.delete(0, tk.END)
+            messagebox.showwarning("showwarning", result[0])
+        # self.usrentry.delete(0, tk.END)
+        # self.passentry.delete(0, tk.END)
+        # self.namentry.delete(0, tk.END)
+        # self.gender.delete(0, tk.END)
+        # self.phonentry.delete(0, tk.END)
+        # self.emailentry.delete(0, tk.END)
+        # self.adressentry.delete(0, tk.END)
 
 class Cust_Page(tk.Toplevel):
     def __init__(self, master, userid) -> None:
