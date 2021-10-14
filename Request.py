@@ -153,7 +153,7 @@ class Request(object):
         """
         sql0 = sql0.format(userid)
         cursor.execute(sql0)
-        results = cursor.fetall()
+        results = cursor.fetchall()
         ids = list(map(lambda x : x[0], results))
         if int(requestid) in ids:
             conn.close()
