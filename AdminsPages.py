@@ -56,6 +56,7 @@ class Login_Admin_Page(tk.Toplevel):
         for widget in self.winfo_children():
             widget.destroy()
         
+
 class Register_Admin_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
@@ -129,7 +130,7 @@ class Search_Admin_Page(tk.Toplevel): #After Admin-Login
         self.userid = userid
         self.master.destroy()
         self.title("Admin Page")
-
+        
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
         x = (wid_screen/2) - (WIDTH/2)
@@ -157,6 +158,7 @@ class Search_Admin_Page(tk.Toplevel): #After Admin-Login
     
     def customers_with_fee(self):
         Customer_Fee_Page(self, self.userid)
+
       
 class Display_Item_Page(tk.Toplevel):
     def __init__(self, master, userid) -> None:
@@ -316,7 +318,7 @@ class Search_Admin_Page2(tk.Toplevel):
         self.ItemID = StringVar()
         self.ItemIDentry = tk.Entry(self, textvariable = self.ItemID)
         self.ItemIDentry.pack()
-
+        
         self.label1 = tk.Label(self, text="Search By").pack()
         self.searchby = ttk.Combobox(self, width="10", values=("Category", "Model"))
         self.searchby.pack()
@@ -455,6 +457,7 @@ class Display_Search_Page(tk.Toplevel):
     
     def close(self):
         self.destroy()
+
 
 
         

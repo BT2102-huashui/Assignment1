@@ -134,7 +134,7 @@ class Request(object):
         sql0 = """
         SELECT id
         FROM request
-        WHERE customer_id = {} AND (request_status = 'Waiting' OR request_status = 'Sub and Wait')
+        WHERE customer_id = {} AND (request_status = 'Submit' OR request_status = 'Sub and Wait' OR request_status = 'Progress')
         """
         sql0 = sql0.format(userid)
         cursor.execute(sql0)

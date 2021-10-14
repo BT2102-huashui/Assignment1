@@ -12,12 +12,13 @@ SQL_FILE = os.getenv('SQL_FILE')
 DB_NAME = os.getenv('DB_NAME')
 USERNAME = 'root'
 
+
 class Customer:
     def __init__(self) -> None:
         super().__init__()
         
     def login(self, userid, password):
-        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+        conn = pymysql.connect(host='localhost', port=3306, user='root', password=MY_SQL_PASSWORD, db='bt2102',
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select password from customer where id = '%s'" % userid
@@ -82,6 +83,7 @@ class Customer:
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
+        
         if "inventory" not in dbExist:
             loadMongoDb()
         db = client["inventory"]

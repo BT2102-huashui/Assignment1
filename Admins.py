@@ -132,7 +132,6 @@ class Administrator(object):
     #     conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
     #                             charset='utf8')
     #     cursor = conn.cursor()
-    
     #     try:
     #         sql1 = "USE " + DB_NAME
     #         sql2 = """SELECT category, model, COUNT(id) as num_sold
@@ -157,7 +156,6 @@ class Administrator(object):
 
     def A_categories_Search(self, c, f):
         return searchfordetail(c, f, True, False, False)
-
 # print(Administrator().A_models_Search("Light1",{}))
 # Administrator().items_under_service()
 # Administrator().customers_with_fee_unpaid()
