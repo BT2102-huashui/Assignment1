@@ -103,42 +103,27 @@ class Request(object):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                            charset='utf8')
         cursor = conn.cursor()
-        sql = """
-        UPDATE request
-        SET request_status = 'Progress', service_status = 'Waiting', payment_date = now(), fee_amount = 0
-        WHERE id = {} AND customer_id = {}
-        """
-        sql = sql.format(requestid, userid)
-        cursor.execute(sql)
-        conn.commit()
-        conn.close()
-        return "Payment successful"
-
-    def update_cancel(self, userid):
-        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
-                           charset='utf8')
-        cursor = conn.cursor()
-        sql = """
-        SELECT id, date
+        sql0 = """
+        SELECT id
         FROM request
-        WHERE customer_id = {} AND fee_amount > 0
+        WHERE id = {} AND (request_status = 'Sub and Wait' AND fee_amount > 0)
         """
-        sql = sql.format(userid)
-        cursor.execute(sql)
-        results = list(map(lambda x : x[:2], cursor.fetchall()))
-        today = date.today()
-        for i in results:
-            first_date = i[1]
-            sql1 = """
+        sql0 = sql0.format(requestid)
+        cursor.execute(sql0)
+        re = cursor.fetchone()
+        if int(requestid) == re[0]:
+            sql = """
             UPDATE request
-            SET service_status = 'Completed', request_status = 'Cancel', fee_amount = 0
-            WHERE id = {}
+            SET request_status = 'Progress', service_status = 'Waiting', payment_date = now(), fee_amount = 0
+            WHERE id = {} AND customer_id = {}
             """
-            if (today - first_date).days >= 10:
-                sql1 = sql1.format(i[0])
-                cursor.execute(sql1)
-                conn.commit()
-        conn.close()
+            sql = sql.format(requestid, userid)
+            cursor.execute(sql)
+            conn.commit()
+            conn.close()
+            return "Payment successful"
+        else:
+            return "Payment unsuccessful, please check with our customer support."
             
 
     def cancel(self, requestid, userid):
@@ -149,20 +134,16 @@ class Request(object):
         sql0 = """
         SELECT id
         FROM request
-        WHERE customer_id = {} AND request_status = 'Approved'
+        WHERE customer_id = {} AND (request_status = 'Waiting' OR request_status = 'Sub and Wait')
         """
         sql0 = sql0.format(userid)
         cursor.execute(sql0)
-        results = cursor.fetall()
+        results = cursor.fetchall()
         ids = list(map(lambda x : x[0], results))
         if int(requestid) in ids:
-            conn.close()
-            return "Cannot cancel the request that has been approved"
-        else:
-            cursor.fetchall()
             sql = """
             UPDATE request
-            SET request_status = 'Cancel', service_status = 'Completed'
+            SET request_status = 'Cancelled', service_status = 'Completed'
             WHERE id = {} AND customer_id = {}
             """
             sql = sql.format(requestid, userid)
@@ -170,6 +151,10 @@ class Request(object):
             conn.commit()
             conn.close()
             return "Request cancelled"
+        else:
+            conn.close()
+            return "Cannot cancel this request, please check with our customer support."
+        
 
     def approve(self, requestid, adminid):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
@@ -213,7 +198,7 @@ class Request(object):
         #if can, serve it
         sql1 = """
                 UPDATE request
-                SET service_status = "Completed", request_status = 'Complete', admin_id = {}
+                SET service_status = "Completed", request_status = 'Completed', admin_id = {}
                 WHERE id = {}
                 """
         sql1 = sql1.format(adminid, requestid)
@@ -255,7 +240,8 @@ class Request(object):
 
 # Request().submit_request('1', '1001', True)
 # Request().submit_request('1', '1001', False)
-# Request().payment(5)
+# print(Request().payment('1', '1'))
+#payment(self, requestid, userid):
 # Request().cancel(6)
 # Request().all_items(1)
 # Request().approve('1', '1')

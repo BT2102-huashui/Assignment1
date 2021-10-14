@@ -61,7 +61,7 @@ class Register_Cust_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
         self.master = master
-        self.master.title("Registration Page")
+        self.title("Registration Page")
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
         x = (wid_screen/2) - (WIDTH/2)
@@ -155,9 +155,9 @@ class Cust_Page(tk.Toplevel):
         tk.Button(self, text="Request", font=("Arial", 12), width=12, height=1, command=self.request).pack()
         tk.Button(self, text="All Items", font=("Arial", 12), width=12, height=1, command=self.allItems).pack()
         tk.Button(self, text="Search", font=("Arial", 12), width=12, height=1, command=self.search).pack()
+        tk.Button(self, text="Close", font=("Arial", 12), width=12, height=1, command=self.close).pack()
     
     def request(self):
-        Request().update_cancel(self.userid)
         Request_Page(self, self.userid)
 
     def allItems(self):
@@ -196,8 +196,7 @@ class Search_Result_Page(tk.Toplevel):#After search page
             self.label7 = tk.Label(self, text="which model do you want").pack()
         elif self.master.searchby.get()== "Model":
             self.label7 = tk.Label(self, text="which category do you want").pack()
-        else:
-            messagebox.showwarning("showwarning", "no searchby")
+        
 
 
         for i in range(len(result)):
@@ -331,8 +330,10 @@ class Search_Cust_Page(tk.Toplevel):#After customer page
         resultS = {}
         if self.searchby.get() == "Category" :
             resultS = Customer().C_categories_Search(self.searchvalue.get(), dic)
-        else:
+        elif self.searchby.get() == "Model":
             resultS = Customer().C_models_Search(self.searchvalue.get(), dic)
+        else:
+            return False
 
         ans = []
         for key in resultS:
@@ -345,5 +346,9 @@ class Search_Cust_Page(tk.Toplevel):#After customer page
         return ans
 
     def showResult(self):
-        self.results = self.search()
-        Search_Result_Page(self)
+        result = self.search()
+        if result:
+            self.results = result
+            Search_Result_Page(self)
+        else:
+            messagebox.showinfo("showinfo", "No results, please change the filters!")
