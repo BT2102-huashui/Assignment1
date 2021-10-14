@@ -14,7 +14,7 @@ class Login_Admin_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
         self.master = master
-        self.title("Login the system as admin")
+        self.title("Welcome to OSHES system, administrator!")
 
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
@@ -74,11 +74,11 @@ class Register_Admin_Page(tk.Toplevel):
         self.name = tk.StringVar()
         self.phone_number = tk.StringVar()
         
-        tk.Label(self, text="Your User ID").pack()
+        tk.Label(self, text="Your User ID*").pack()
         self.usrentry = tk.Entry(self, textvariable=self.username)
         self.usrentry.pack()
 
-        tk.Label(self, text="Password").pack()
+        tk.Label(self, text="Password*").pack()
         self.passentry = tk.Entry(self, textvariable=self.password)
         self.passentry.pack()
 
@@ -93,6 +93,8 @@ class Register_Admin_Page(tk.Toplevel):
         tk.Label(self, text="Phone Number").pack()
         self.phonentry = tk.Entry(self, textvariable=self.phone_number)
         self.phonentry.pack()
+
+        tk.Label(self, text="You must fill in all fields with *").pack()
         
         tk.Button(self, text="Register", font=("Arial", 12), width=15, height=1, command=self.register_user).pack()
         tk.Button(self, text="Close", font=("Arial", 12), width=15, height=1, command=self.close).pack()
@@ -101,7 +103,7 @@ class Register_Admin_Page(tk.Toplevel):
         self.destroy()
 
     def register_user(self):
-        if self.checkcmbo():
+        try:
             userid = self.username.get()
             password = self.password.get()
             name = self.name.get()
@@ -110,24 +112,16 @@ class Register_Admin_Page(tk.Toplevel):
             result = Administrator().registration(userid, password, name, gender, number)
             if result[1]:
                 messagebox.showinfo("showinfo", result[0])
+                self.close()
             else:
                 messagebox.showwarning("showwarning", result[0])
-        else:
-            messagebox.showwarning("showwarning", "Plz fill all the box")
-        self.usrentry.delete(0, tk.END)
-        self.passentry.delete(0, tk.END)
-        self.namentry.delete(0, tk.END)
-        self.gender.delete(0, tk.END)
-        self.phonentry.delete(0, tk.END)
-        self.close()      
-
-    def checkcmbo(self):
-        if self.gender.get() == "Female":
-            return "Female"
-        elif self.gender.get() == "Male":
-            return "Male"
-        else:
-            return False
+        except:
+            messagebox.showwarning("showwarning", 'Sth is wrong')
+        # self.usrentry.delete(0, tk.END)
+        # self.passentry.delete(0, tk.END)
+        # self.namentry.delete(0, tk.END)
+        # self.gender.delete(0, tk.END)
+        # self.phonentry.delete(0, tk.END)
     
 class Search_Admin_Page(tk.Toplevel): #After Admin-Login
     def __init__(self, master, userid) -> None:

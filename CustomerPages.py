@@ -1,9 +1,10 @@
 from os import X_OK
 import tkinter as tk
 from RequestPages import *
-from tkinter import StringVar, messagebox, ttk
+from tkinter import Message, StringVar, messagebox, ttk
 from Customers import *
 from Admins import *
+from Request import *
 
 WIDTH = 500
 HEIGHT = 350
@@ -13,7 +14,7 @@ class Login_Cust_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
         self.master = master
-        self.title("Login the system")
+        self.title("Welcome to OSHES system!")
         
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
@@ -60,7 +61,7 @@ class Register_Cust_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
         self.master = master
-        self.master.title("Register Page")
+        self.master.title("Registration Page")
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
         x = (wid_screen/2) - (WIDTH/2)
@@ -102,6 +103,8 @@ class Register_Cust_Page(tk.Toplevel):
         self.emailentry = tk.Entry(self, textvariable=self.email)
         self.emailentry.pack()
 
+        tk.Label(self, text="You must fill in all fields").pack()
+
         tk.Button(self, text="Register", font=("Arial", 12), width=15, height=1, command=self.register_user).pack()
         tk.Button(self, text="Close", font=("Arial", 12), width=15, height=1, command=self.close).pack()
 
@@ -114,6 +117,7 @@ class Register_Cust_Page(tk.Toplevel):
             password = self.password.get()
             name = self.name.get()
             gender = self.gender.get()
+            print(gender)
             number = self.phone_number.get()
             address = self.address.get()
             email = self.email.get()
@@ -125,14 +129,14 @@ class Register_Cust_Page(tk.Toplevel):
             else:
                 messagebox.showwarning("showwarning", result[0])
         except:
-            messagebox.showwarning("showwarning", "sth wrong")
-        self.usrentry.delete(0, tk.END)
-        self.passentry.delete(0, tk.END)
-        self.namentry.delete(0, tk.END)
-        self.gender.delete(0, tk.END)
-        self.phonentry.delete(0, tk.END)
-        self.emailentry.delete(0, tk.END)
-        self.adressentry.delete(0, tk.END)
+            messagebox.showwarning("showwarning", 'sth is wrong')
+        # self.usrentry.delete(0, tk.END)
+        # self.passentry.delete(0, tk.END)
+        # self.namentry.delete(0, tk.END)
+        # self.gender.delete(0, tk.END)
+        # self.phonentry.delete(0, tk.END)
+        # self.emailentry.delete(0, tk.END)
+        # self.adressentry.delete(0, tk.END)
 
 class Cust_Page(tk.Toplevel):
     def __init__(self, master, userid) -> None:
@@ -140,7 +144,7 @@ class Cust_Page(tk.Toplevel):
         self.master = master
         self.userid = userid
         self.master.destroy()
-        self.title("Customer Page")
+        self.title("Welcome to OSHES system, customer!")
         
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
@@ -153,6 +157,7 @@ class Cust_Page(tk.Toplevel):
         tk.Button(self, text="Search", font=("Arial", 12), width=12, height=1, command=self.search).pack()
     
     def request(self):
+        Request().update_cancel(self.userid)
         Request_Page(self, self.userid)
 
     def allItems(self):
@@ -192,7 +197,7 @@ class Search_Result_Page(tk.Toplevel):#After search page
         elif self.master.searchby.get()== "Model":
             self.label7 = tk.Label(self, text="which category do you want").pack()
         else:
-            print("no searchby")
+            messagebox.showwarning("showwarning", "no searchby")
 
 
         for i in range(len(result)):
@@ -217,11 +222,10 @@ class Search_Result_Page(tk.Toplevel):#After search page
             
 
         p = C.purchase(requirement)
-        print(requirement)
         if p == None:
             messagebox.showwarning("showwarning", "No such item exists.")
         else:
-            messagebox.showwarning("showwarning", str(p) + "is purchased by" + self.master.userid  )
+            messagebox.showwarning("showwarning", str(p) + " is purchased by" + self.master.userid  )
             C.purchaseDB(p, self.master.userid)
     def close(self):
         self.destroy()

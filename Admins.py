@@ -33,6 +33,14 @@ class Administrator(object):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
+        if userid == '' or password == '' or name == '' or gender == '' or number == '':
+            return ('Please fill in all fields', False)
+        elif not userid.isnumeric():
+            return ("id should be number", False)
+        elif not number.isnumeric():
+            return ("Phone number should be number", False)
+        elif gender != 'Female' and gender != 'Male':
+            return ('Please key in the correct gender', False)
         sql = "select * from administrator where id = '%s'" % userid
         cursor.execute(sql)
         result = cursor.fetchone()
@@ -40,7 +48,7 @@ class Administrator(object):
             conn.close()
             cursor.close()
             return ("User ID exists, please enter a new username.", False)
-        elif password != "" and userid != "":
+        else:
             sql = """
             INSERT INTO administrator(id, password, name, gender, phone_number) values({}, '{}', '{}', '{}', '{}')
             """
@@ -50,10 +58,6 @@ class Administrator(object):
             conn.close()
             cursor.close()
             return ("Registration successful", True)
-        else:
-            conn.close()
-            cursor.close()
-            return ("Empty id or password", False)
     
     def product_manage(self):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
@@ -92,18 +96,19 @@ class Administrator(object):
                                 charset='utf8')
         cursor = conn.cursor()
         try:
-            sql1 = "USE " + DB_NAME
-            sql2 = """SELECT r.id, customer_id, name, fee_amount, phone_number, address, email_address
-                        FROM request AS r, customer AS c
-                        WHERE customer_id = c.id AND request_status ='Sub and Wait'
+            sql2 = """SELECT r.id, r.customer_id, c.name, r.fee_amount, c.phone_number, c.address, c.email_address
+                        FROM customer AS c
+                        LEFT JOIN request AS r
+                        ON customer_id = c.id
+                        WHERE request_status ='Sub and Wait'
                         ORDER BY customer_id, name"""
-            cursor.execute(sql1)
             cursor.execute(sql2)
-            cursor.close()
             results = cursor.fetchall()
+            print(results)
+            conn.close()
             return results
         except:
-            cursor.close()
+            conn.close()
             return "Error: unable to fecth data"
 
     def items_under_service(self):
@@ -154,4 +159,5 @@ class Administrator(object):
         return searchfordetail(c, f, True, False, False)
 # print(Administrator().A_models_Search("Light1",{}))
 # Administrator().items_under_service()
+# Administrator().customers_with_fee_unpaid()
 

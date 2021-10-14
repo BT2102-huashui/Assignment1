@@ -2,6 +2,8 @@ import pymysql
 from Customers import DB_NAME, MY_SQL_PASSWORD, USERNAME
 from Admins import Administrator
 import datetime
+from datetime import date
+
 
 
 class Request(object):
@@ -112,21 +114,62 @@ class Request(object):
         conn.close()
         return "Payment successful"
 
+    def update_cancel(self, userid):
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+                           charset='utf8')
+        cursor = conn.cursor()
+        sql = """
+        SELECT id, date
+        FROM request
+        WHERE customer_id = {} AND fee_amount > 0
+        """
+        sql = sql.format(userid)
+        cursor.execute(sql)
+        results = list(map(lambda x : x[:2], cursor.fetchall()))
+        today = date.today()
+        for i in results:
+            first_date = i[1]
+            sql1 = """
+            UPDATE request
+            SET service_status = 'Completed', request_status = 'Cancel', fee_amount = 0
+            WHERE id = {}
+            """
+            if (today - first_date).days >= 10:
+                sql1 = sql1.format(i[0])
+                cursor.execute(sql1)
+                conn.commit()
+        conn.close()
+            
+
     def cancel(self, requestid, userid):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                            charset='utf8')
         cursor = conn.cursor()
 
-        sql = """
-        UPDATE request
-        SET request_status = 'Cancel', service_status = 'Completed'
-        WHERE id = {} AND customer_id = {}
+        sql0 = """
+        SELECT id
+        FROM request
+        WHERE customer_id = {} AND request_status = 'Approved'
         """
-        sql = sql.format(requestid, userid)
-        cursor.execute(sql)
-        conn.commit()
-        conn.close()
-        return "Request cancelled"
+        sql0 = sql0.format(userid)
+        cursor.execute(sql0)
+        results = cursor.fetall()
+        ids = list(map(lambda x : x[0], results))
+        if int(requestid) in ids:
+            conn.close()
+            return "Cannot cancel the request that has been approved"
+        else:
+            cursor.fetchall()
+            sql = """
+            UPDATE request
+            SET request_status = 'Cancel', service_status = 'Completed'
+            WHERE id = {} AND customer_id = {}
+            """
+            sql = sql.format(requestid, userid)
+            cursor.execute(sql)
+            conn.commit()
+            conn.close()
+            return "Request cancelled"
 
     def approve(self, requestid, adminid):
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
@@ -135,7 +178,7 @@ class Request(object):
         sql0 = """
         SELECT id
         FROM request
-        WHERE request_status = 'Progress' OR 'Submit'
+        WHERE request_status = 'Progress' OR request_status = 'Submit'
         """
         cursor.execute(sql0)
         requests = list(map(lambda x:x[0], cursor.fetchall()))
@@ -185,7 +228,7 @@ class Request(object):
                                charset='utf8')
         cursor = conn.cursor()
         sql1 = """
-                SELECT id, item_id, service_status, fee_amount
+                SELECT id, item_id, request_status, fee_amount
                 FROM request
                 WHERE customer_id = {}
                 """
@@ -200,7 +243,7 @@ class Request(object):
                                charset='utf8')
         cursor = conn.cursor()
         sql1 = """
-        SELECT id, category, model, product_id, purchase_date
+        SELECT *
         FROM item
         WHERE customer_id = {}
         """
@@ -217,3 +260,4 @@ class Request(object):
 # Request().all_items(1)
 # Request().approve('1', '1')
 # print(Request().submit_request('1', '1001'))
+# Request().update_cancel('1')

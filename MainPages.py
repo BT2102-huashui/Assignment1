@@ -5,8 +5,8 @@ from Admins import *
 from AdminsPages import *
 from CustomerPages import *
 
-WIDTH = 500
-HEIGHT = 350
+WIDTH = 600
+HEIGHT = 200
 HEIGHT2 = 500
 #The main page when open the OSHES
 class Main_Page(tk.Tk):
@@ -16,16 +16,18 @@ class Main_Page(tk.Tk):
 
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
+        canva = tk.Canvas(self,width=600, height=150)
+        canva.grid(columnspan=2, rowspan=4)
         x = (wid_screen/2) - (WIDTH/2)
         y = (height_screen/2) - (HEIGHT/2)
         self.geometry('%dx%d+%d+%d' % (WIDTH, HEIGHT, x, y))
 
-        tk.Label(text="Login and Registeration", font=("Calibri", 20)).pack()
-        tk.Button(self, text="Admins Login", font=("Arial", 12), width=12, height=1, command=self.call_admin_login).pack()
-        tk.Button(self, text="Customer Login", font=("Arial", 12), width=12, height=1, command=self.call_cust_login).pack()
-        tk.Button(self, text="Register as administrators", font=("Arial", 12), width=18, height=1, command=self.call_admin_regis).pack()
-        tk.Button(self, text="Register as customers", font=("Arial", 12), width=18, height=1, command=self.call_cust_regis).pack()
-        tk.Button(self, text="Close", font=("Arial", 12), width=18, height=1, command=self.close).pack()
+        tk.Label(text="Welcome to \n OSHMS System", font=("Calibri", 20)).grid(column=0, row=1, rowspan=2)
+        tk.Button(self, text="Admins Login", font=("Arial", 12), width=22, height=1, command=self.call_admin_login).grid(column=1, row=0)
+        tk.Button(self, text="Customer Login", font=("Arial", 12), width=22, height=1, command=self.call_cust_login).grid(column=1, row=1)
+        tk.Button(self, text="Register as administrators", font=("Arial", 12), width=22, height=1, command=self.call_admin_regis).grid(column=1, row=2)
+        tk.Button(self, text="Register as customers", font=("Arial", 12), width=22, height=1, command=self.call_cust_regis).grid(column=1, row=3)
+        tk.Button(self, text="Close", font=("Arial", 12), width=12, height=1, command=self.close).grid(column=1, row=4)
 
     def call_admin_login(self):
         Login_Admin_Page(self)

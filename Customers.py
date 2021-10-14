@@ -41,6 +41,14 @@ class Customer:
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
+        if userid == "" or password == "" or name == "" or gender == "" or number == "" or address =="" or email == "":
+            return ("Please Fill in All Fields", False)
+        elif not userid.isnumeric():
+            return ("id should be number", False)
+        elif not number.isnumeric():
+            return ("Phone number should be number", False)
+        elif gender != 'Female' and gender != 'Male':
+            return ('Please key in the correct gender', False)
         sql = "select * from customer where id = '%s'" % userid
         cursor.execute(sql)
         result = cursor.fetchone()
@@ -60,9 +68,7 @@ class Customer:
             cursor.close()
             return ("Registration successful", True)
         else:
-            conn.close()
-            cursor.close()
-            return ("Empty id or password", False)
+            return ('Sth is wrong', False)
 
     def C_categories_Search(self, c, f):
         return searchfordetail(c, f, True, True, False)
@@ -137,18 +143,18 @@ class Customer:
             }
         },{'$match':
             {"CustomerID":userid}},
-        {'$project': { "_id":0, "Category":1, "Model":1, "Color":1, "PurchaseStatus":1, "CustomerID":1, "Color": 1, "Factory": 1,
+        {'$project': { "_id":0, "Category":1, "Model":1, "Color":1, "ItemID":1, "Color": 1, "Factory": 1,
                                        "PowerSupply" : 1, "ProductionYear" :1,
-                       "Warranty":"$combine.Warranty (months)" , "Cost": "$combine.Cost ($)"}}
+                       "Warranty":"$combine.Warranty (months)"}}
                 
         ])
 
-        resultlist = list(listI)[0]
+        resultlist = list(listI)
         return resultlist
 
 
         
 
-#Customer().registration("03", "1221")
+#print(Customer().purchasedList('1'))
 #print(Customer().C_categories_Search("Lights", {}))
 #print(Customer().purchase({"Color": "White"}))
