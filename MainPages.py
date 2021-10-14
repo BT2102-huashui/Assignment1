@@ -5,7 +5,7 @@ from Admins import *
 from AdminsPages import *
 from CustomerPages import *
 
-WIDTH = 600
+WIDTH = 500
 HEIGHT = 200
 HEIGHT2 = 500
 #The main page when open the OSHES
@@ -16,7 +16,7 @@ class Main_Page(tk.Tk):
 
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
-        canva = tk.Canvas(self,width=600, height=150)
+        canva = tk.Canvas(self,width=500, height=150)
         canva.grid(columnspan=2, rowspan=4)
         x = (wid_screen/2) - (WIDTH/2)
         y = (height_screen/2) - (HEIGHT/2)

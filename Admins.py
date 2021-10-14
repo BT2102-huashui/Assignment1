@@ -96,7 +96,7 @@ class Administrator(object):
                                 charset='utf8')
         cursor = conn.cursor()
         try:
-            sql2 = """SELECT r.id, r.customer_id, c.name, r.fee_amount, c.phone_number, c.address, c.email_address
+            sql2 = """SELECT r.id, r.customer_id, c.name, r.fee_amount, c.phone_number, c.address, c.email_address, r.date
                         FROM customer AS c
                         LEFT JOIN request AS r
                         ON customer_id = c.id
@@ -128,26 +128,25 @@ class Administrator(object):
             conn.close()
             return "Error: unable to fecth data"
 
-    def call_num_of_items_sold(self):
-        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
-                                charset='utf8')
-        cursor = conn.cursor()
-    
-        try:
-            sql1 = "USE " + DB_NAME
-            sql2 = """SELECT category, model, COUNT(id) as num_sold
-                        FROM item
-                        WHERE purchase_status='Yes'
-                        GROUP BY category, model
-                        ORDER BY category, model"""
-            cursor.execute(sql1)
-            cursor.execute(sql2)
-            cursor.close()
-            results = cursor.fetchall()
-            return (('category','model','num_of_items_sold'), results)
-        except:
-            cursor.close()
-            return "Error: unable to fetch data"
+    # def call_num_of_items_sold(self):
+    #     conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+    #                             charset='utf8')
+    #     cursor = conn.cursor()
+    #     try:
+    #         sql1 = "USE " + DB_NAME
+    #         sql2 = """SELECT category, model, COUNT(id) as num_sold
+    #                     FROM item
+    #                     WHERE purchase_status='Yes'
+    #                     GROUP BY category, model
+    #                     ORDER BY category, model"""
+    #         cursor.execute(sql1)
+    #         cursor.execute(sql2)
+    #         cursor.close()
+    #         results = cursor.fetchall()
+    #         return (('category','model','num_of_items_sold'), results)
+    #     except:
+    #         cursor.close()
+    #         return "Error: unable to fecth data"
 
     def A_ID_Search(self, ID, f):
         return searchfordetail(ID, f, False, False, True)

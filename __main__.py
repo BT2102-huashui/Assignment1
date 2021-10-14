@@ -3,6 +3,8 @@ import sys
 sys.path.append(os.getcwd())
 import pymysql
 import json
+import datetime
+from datetime import date
 import pymongo
 from Mongodbdata import loadMongoDb
 from dotenv import load_dotenv
@@ -71,6 +73,31 @@ def checkSQL(filename):
     except:
         conn.close()
 
+def update_cancel():
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
+                           charset='utf8')
+        cursor = conn.cursor()
+        sql = """
+        SELECT id, date
+        FROM request
+        WHERE fee_amount > 0
+        """
+        cursor.execute(sql)
+        results = list(map(lambda x : x[:2], cursor.fetchall()))
+        today = date.today()
+        for i in results:
+            first_date = i[1]
+            sql1 = """
+            UPDATE request
+            SET service_status = 'Completed', request_status = 'Cancelled', fee_amount = 0
+            WHERE id = {}
+            """
+            if (today - first_date).days >= 10:
+                sql1 = sql1.format(i[0])
+                cursor.execute(sql1)
+                conn.commit()
+        conn.close()
+
 def checkMongo():
     client = pymongo.MongoClient()
     dbExist = client.list_database_names()
@@ -80,5 +107,6 @@ def checkMongo():
 if __name__ == "__main__":
     checkMongo()
     checkSQL(SQL_FILE)
+    update_cancel()
     from MainPages import Main_Page
     Main_Page().mainloop()

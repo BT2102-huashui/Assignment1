@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS bt2102.request (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     item_id INT NOT NULL,
     customer_id INT NOT NULL,
-    request_status ENUM('Submit', 'Sub and Wait', 'Progress', 'Approved', 'Cancel', 'Complete') DEFAULT NULL,
+    request_status ENUM('Submit', 'Sub and Wait', 'Progress', 'Approved', 'Cancelled', 'Completed') DEFAULT NULL,
     service_status ENUM('Waiting', 'Progress', 'Completed') NOT NULL DEFAULT 'Waiting',
     date DATE NOT NULL,
 	fee_amount float(20) DEFAULT NULL,

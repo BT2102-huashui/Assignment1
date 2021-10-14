@@ -61,7 +61,7 @@ class Register_Admin_Page(tk.Toplevel):
     def __init__(self, master) -> None:
         super().__init__()
         self.master = master
-        self.master.title("Register Page")
+        self.title("Register Page")
         wid_screen = self.winfo_screenwidth()
         height_screen = self.winfo_screenheight()
         x = (wid_screen/2) - (WIDTH/2)
@@ -272,14 +272,15 @@ class Customer_Fee_Page(tk.Toplevel):
         self.geometry('%dx%d+%d+%d' % (2*WIDTH, HEIGHT, x, y))
 
         tk.Label(self, text="Customer with unpaid fee", font=("Calibri", 20)).pack()
-        table = ttk.Treeview(self, columns=(1, 2, 3, 4, 5, 6, 7), show = 'headings', height=8)
+        table = ttk.Treeview(self, columns=(1, 2, 3, 4, 5, 6, 7, 8), show = 'headings', height=8)
         table.column(1, anchor=tk.CENTER, width=100)
         table.column(2, anchor=tk.CENTER, width=100)
         table.column(3, anchor=tk.CENTER, width=100)
         table.column(4, anchor=tk.CENTER, width=100)
         table.column(5, anchor=tk.CENTER, width=100)
         table.column(6, anchor=tk.CENTER, width=100)
-        table.column(7, anchor=tk.CENTER, width=100)
+        table.column(7, anchor=tk.CENTER, width=140)
+        table.column(8, anchor=tk.CENTER, width=100)
         table.heading(1, text='Request ID', anchor=tk.CENTER)
         table.heading(2, text='Customer ID', anchor=tk.CENTER)
         table.heading(3, text='Name', anchor=tk.CENTER)
@@ -287,6 +288,7 @@ class Customer_Fee_Page(tk.Toplevel):
         table.heading(5, text='Phone number', anchor=tk.CENTER)
         table.heading(6, text='Address', anchor=tk.CENTER)
         table.heading(7, text='Email', anchor=tk.CENTER)
+        table.heading(8, text='Request Date', anchor=tk.CENTER)
 
         results = Administrator().customers_with_fee_unpaid()
         for i in range(len(results)):
@@ -397,12 +399,15 @@ class Search_Admin_Page2(tk.Toplevel):
         A = Administrator()
         dic = self.addfilter()
         result = {}
-        if self.searchby.get() == "Category" :
+        if len(self.ItemID.get()) > 0:
+            if dic == {} and self.searchby.get() == "" and self.searchvalue.get() == "":
+                result = A.A_ID_Search(self.ItemID.get(), dic)
+            else:
+                result = "ID"
+        elif self.searchby.get() == "Category":
             result = A.A_categories_Search(self.searchvalue.get(), dic)
         elif self.searchby.get() == "Model":
             result = A.A_models_Search(self.searchvalue.get(), dic)
-        else:
-            result = A.A_ID_Search(self.ItemID.get(), dic)
 
         return result
 
@@ -426,7 +431,10 @@ class Display_Search_Page(tk.Toplevel):
         self.geometry('%dx%d+%d+%d' % (2*WIDTH, HEIGHT, x, y))
 
         result = self.master.results
-        if len(result) == 0:
+        if result == "ID":
+            messagebox.showinfo("showinfo", "If you would like to use item search, please remove the filters!")
+            self.close()
+        elif len(result) == 0:
             messagebox.showinfo("showinfo", "No results, please change the filters!")
             self.close()
         else:
