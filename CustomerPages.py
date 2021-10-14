@@ -75,11 +75,11 @@ class Register_Cust_Page(tk.Toplevel):
         self.address = tk.StringVar()
         self.email = tk.StringVar()
 
-        tk.Label(self, text="Your User ID*").pack()
+        tk.Label(self, text="Your User ID").pack()
         self.usrentry = tk.Entry(self, textvariable=self.username)
         self.usrentry.pack()
 
-        tk.Label(self, text="Password*").pack()
+        tk.Label(self, text="Password").pack()
         self.passentry = tk.Entry(self, textvariable=self.password)
         self.passentry.pack()
 
@@ -103,7 +103,7 @@ class Register_Cust_Page(tk.Toplevel):
         self.emailentry = tk.Entry(self, textvariable=self.email)
         self.emailentry.pack()
 
-        tk.Label(self, text="You must fill in all fields with *").pack()
+        tk.Label(self, text="You must fill in all fields").pack()
 
         tk.Button(self, text="Register", font=("Arial", 12), width=15, height=1, command=self.register_user).pack()
         tk.Button(self, text="Close", font=("Arial", 12), width=15, height=1, command=self.close).pack()
@@ -112,11 +112,12 @@ class Register_Cust_Page(tk.Toplevel):
         self.destroy()
 
     def register_user(self):
-        try:
+        # try:
             userid = self.username.get()
             password = self.password.get()
             name = self.name.get()
             gender = self.gender.get()
+            print(gender)
             number = self.phone_number.get()
             address = self.address.get()
             email = self.email.get()
@@ -127,8 +128,8 @@ class Register_Cust_Page(tk.Toplevel):
                 self.close()
             else:
                 messagebox.showwarning("showwarning", result[0])
-        except:
-            messagebox.showwarning("showwarning", result[0])
+        # except:
+        #     messagebox.showwarning("showwarning", 'sth is wrong in the register')
         # self.usrentry.delete(0, tk.END)
         # self.passentry.delete(0, tk.END)
         # self.namentry.delete(0, tk.END)
