@@ -18,7 +18,7 @@ class Customer:
         super().__init__()
         
     def login(self, userid, password):
-        conn = pymysql.connect(host='localhost', port=3306, user='root', password=MY_SQL_PASSWORD, db='bt2102',
+        conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db='bt2102',
                                charset='utf8')
         cursor = conn.cursor()
         sql = "select password from customer where id = '%s'" % userid
@@ -133,7 +133,7 @@ class Customer:
         },{'$match':
             {"CustomerID":userid}},
         {'$project': { "_id":0, "Category":1, "Model":1, "Color":1, "ItemID":1, "Color": 1, "Factory": 1,
-                                       "PowerSupply" : 1, "ProductionYear" :1,
+                                       "PowerSupply" : 1, "ProductionYear" :1, "Price" : "$combine.Price ($)", 
                        "Warranty":"$combine.Warranty (months)"}}
                 
         ])

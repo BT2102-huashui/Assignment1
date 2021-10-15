@@ -242,15 +242,21 @@ class Under_Service_Page(tk.Toplevel):
     
     def approve(self):
         requestid = self.request.get()
-        mess = Request().approve(requestid, self.userid)
-        messagebox.showinfo("showinfo", mess)
-        self.requestentry.delete(0, tk.END)
+        try:
+            mess = Request().approve(requestid, self.userid)
+            messagebox.showinfo("showinfo", mess)
+            self.requestentry.delete(0, tk.END)
+        except:
+            messagebox.showinfo("showinfo", "There is somthing wrong with your input, please check again!")
         
     def serve(self):
         requestid = self.item.get()
-        mess = Request().complete(requestid, self.userid)
-        messagebox.showinfo("showinfo", mess)
-        self.itementry.delete(0, tk.END)
+        try:
+            mess = Request().complete(requestid, self.userid)
+            messagebox.showinfo("showinfo", mess)
+            self.itementry.delete(0, tk.END)
+        except:
+            messagebox.showinfo("showinfo", "There is somthing wrong with your input, please check again!")
         
     def refresh(self):
         Under_Service_Page(self.master, self.userid)

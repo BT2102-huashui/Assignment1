@@ -96,14 +96,14 @@ class See_items_buy(tk.Toplevel):
         y = (height_screen/2) - (HEIGHT/2)
         self.geometry('%dx%d+%d+%d' % (2*WIDTH, HEIGHT, x, y))
 
-        tv = ttk.Treeview(self, columns=(1, 2, 3, 4, 5, 6, 7, 8), show = 'headings', height=8)
+        tv = ttk.Treeview(self, columns=(1, 2, 3, 4, 5, 6, 7, 8, 9), show = 'headings', height=8)
         result = Customer().purchasedList(self.customerid)
 
         if len(result) == 0:
             messagebox.showinfo("showinfo", "No item purchased yet.")
             self.close()
         else:
-            length = (1, 2, 3, 4, 5, 6, 7, 8)
+            length = (1, 2, 3, 4, 5, 6, 7, 8, 9)
             for i in length:
                 tv.column(i, anchor=tk.CENTER, width=100)
         

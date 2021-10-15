@@ -32,7 +32,7 @@ def searchfordetail(c, f, ifCategory, ifCustomer, itemSearch):
             dic},
         {'$group': {"_id" : {"Category": "$Category", "Model":"$Model", "Warranty": "$combine.Warranty (months)","Cost": "$combine.Cost ($)",
                     "Price": "$combine.Price ($)"},
-                    "Inventory": { "$sum": 1 }}},
+                    "Inventory": { "$sum": {'$cond' : {'if' : {'$eq' : ['$PurchaseStatus' , 'Unsold']}, 'then' : 1, 'else' : 0}}}}},
         {'$project': {"_id":0, "Category":"$_id.Category", "Model":"$_id.Model", "Warranty": "$_id.Warranty","Cost": "$_id.Cost",
                     "Price": "$_id.Price", "Inventory_level":"$Inventory"}},
         {'$sort' : {"Category" :1}}
