@@ -19,6 +19,17 @@ class Request(object):
         sql1 = sql1.format(userid)
         cursor.execute(sql1)
         items = list(map(lambda x:x[0], cursor.fetchall()))
+        #Check whether item has been submitted
+        sql0 = """
+        SELECT item_id
+        FROM request
+        WHERE customer_id = {}
+        """
+        sql0 = sql0.format(userid)
+        cursor.execute(sql0)
+        submitted_items = list(map(lambda x:x[0], cursor.fetchall()))
+        if int(itemid) in submitted_items:
+            return (2, "You have submitted an request for this item. If you would like to submit a new request, please cancel the previous one.")
         if int(itemid) in items:
             sql3 = """
             SELECT purchase_date, product_id
@@ -63,7 +74,7 @@ class Request(object):
                 conn.close()
                 return (1,"Submmited and Waiting")
         else:
-            return (2,"Cannot submit items for others")
+            return (2,"Sorry, we cannot find this item in your buying history, please check again!")
 
     def ifwarranty(self, purchase_date, current_date, warranty):
         purchase_year = int(purchase_date[0:4])
