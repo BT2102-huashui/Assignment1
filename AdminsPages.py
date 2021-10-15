@@ -248,6 +248,7 @@ class Under_Service_Page(tk.Toplevel):
             self.requestentry.delete(0, tk.END)
         except:
             messagebox.showinfo("showinfo", "There is somthing wrong with your input, please check again!")
+            self.requestentry.delete(0, tk.END)
         
     def serve(self):
         requestid = self.item.get()
@@ -257,6 +258,7 @@ class Under_Service_Page(tk.Toplevel):
             self.itementry.delete(0, tk.END)
         except:
             messagebox.showinfo("showinfo", "There is somthing wrong with your input, please check again!")
+            self.itementry.delete(0, tk.END)
         
     def refresh(self):
         Under_Service_Page(self.master, self.userid)
