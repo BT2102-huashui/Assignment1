@@ -23,7 +23,7 @@ class Request(object):
         sql0 = """
         SELECT item_id
         FROM request
-        WHERE customer_id = {}
+        WHERE customer_id = {} AND request_status != 'Completed' AND request_status != 'Cancelled'
         """
         sql0 = sql0.format(userid)
         cursor.execute(sql0)
