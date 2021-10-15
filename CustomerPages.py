@@ -206,7 +206,6 @@ class Search_Result_Page(tk.Toplevel):#After search page
         self.MorCentry.pack()
 
         tk.Button(self, text="Purchase", font=("Arial", 12), width=12, height=1, command=self.purchase).pack()
-        tk.Button(self, text="Refresh", font=("Arial", 12), width=12, height=1, command=self.refresh).pack()
         tk.Button(self, text="Close", font=("Arial", 12), width=12, height=1, command=self.close).pack()
 
     def purchase(self):
@@ -225,11 +224,6 @@ class Search_Result_Page(tk.Toplevel):#After search page
         else:
             messagebox.showwarning("showwarning", str(p) + " is purchased by" + self.master.userid  )
             C.purchaseDB(p, self.master.userid)
-    def refresh(self):
-        self.master.showResult()
-        Search_Result_Page(self.master)
-        self.close()
-    
     def close(self):
         self.destroy()
 
