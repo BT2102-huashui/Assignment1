@@ -78,14 +78,11 @@ class Customer:
 
     def purchaseDB(self, Iid, Cid):
         client = pymongo.MongoClient()
-        dbExist = client.list_database_names()
 
         conn = pymysql.connect(host='localhost', port=3306, user=USERNAME, password=MY_SQL_PASSWORD, db=DB_NAME,
                                charset='utf8')
         cursor = conn.cursor()
-        
-        if "inventory" not in dbExist:
-            loadMongoDb()
+
         db = client["inventory"]
         myItems = db["items"]
         if Iid == None:
@@ -100,10 +97,6 @@ class Customer:
 
     def purchase(self, requirement):
         client = pymongo.MongoClient()
-        dbExist = client.list_database_names()
-
-        if "inventory" not in dbExist:
-            loadMongoDb()
         db = client["inventory"]
         myItems = db["items"]
 
@@ -128,10 +121,6 @@ class Customer:
         
     def purchasedList(self, userid):
         client = pymongo.MongoClient()
-        dbExist = client.list_database_names()
-
-        if "inventory" not in dbExist:
-            loadMongoDb()
         db = client["inventory"]
         myItems = db["items"]
         listI = myItems.aggregate([{
