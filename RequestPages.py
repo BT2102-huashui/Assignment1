@@ -99,21 +99,23 @@ class See_items_buy(tk.Toplevel):
         tv = ttk.Treeview(self, columns=(1, 2, 3, 4, 5, 6, 7, 8), show = 'headings', height=8)
         result = Customer().purchasedList(self.customerid)
 
-        length = (1, 2, 3, 4, 5, 6, 7, 8)
-        for i in length:
-            tv.column(i, anchor=tk.CENTER, width=100)
+        if len(result) == 0:
+            messagebox.showinfo("showinfo", "No item purchased yet.")
+            self.close()
+        else:
+            length = (1, 2, 3, 4, 5, 6, 7, 8)
+            for i in length:
+                tv.column(i, anchor=tk.CENTER, width=100)
         
-        headings = list(result[0].keys())
-        for i in range(len(result[0].items())):
-            tv.heading(i+1, text=headings[i])
+            headings = list(result[0].keys())
+            for i in range(len(result[0].items())):
+                tv.heading(i+1, text=headings[i])
 
-        for i in range(len(result)):
-            row = tuple(result[i].values())
-            tv.insert(parent='', index=i+1, iid=i+1, values=row)
-
-        tv.pack()
-
-        tk.Button(self, text="Close", font=("Arial", 12), width=12, height=1, command=self.close).pack()
+            for i in range(len(result)):
+                row = tuple(result[i].values())
+                tv.insert(parent='', index=i+1, iid=i+1, values=row)
+            tv.pack()
+            tk.Button(self, text="Close", font=("Arial", 12), width=12, height=1, command=self.close).pack()
 
     def close(self):
         self.destroy()
