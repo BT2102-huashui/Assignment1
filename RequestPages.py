@@ -59,24 +59,33 @@ class Request_Page(tk.Toplevel):
     def submit(self):
         itemid = self.itemid.get()
         result = Request().submit_request(self.customerid, itemid)#ifwarranty need to be changed
-        if result[0] == 0 or 1:
-            messagebox.showinfo("showinfo", result[1])
-            self.itemidentry.delete(0, tk.END)
-            self.refresh()
-        else:
-            messagebox.showinfo("showinfo", result[1])
-            self.refresh()
+        try:
+            if result[0] == 0 or 1:
+                messagebox.showinfo("showinfo", result[1])
+                self.itemidentry.delete(0, tk.END)
+                self.refresh()
+            else:
+                messagebox.showinfo("showinfo", result[1])
+                self.refresh()
+        except:
+            messagebox.showinfo("showinfo", "There is somthing wrong with your input, please check again!")
     
     def cancel(self):
         requestid = self.requestid.get()
-        mess = Request().cancel(requestid, self.customerid)
-        messagebox.showinfo("showinfo", mess)
+        try:
+            mess = Request().cancel(requestid, self.customerid)
+            messagebox.showinfo("showinfo", mess)
+        except:
+            messagebox.showinfo("showinfo", "There is somthing wrong with your input, please check again!")
         
 
     def pay(self):
         requestid = self.payid.get()
-        mess = Request().payment(requestid, self.customerid)
-        messagebox.showinfo("showinfo", mess)
+        try:
+            mess = Request().payment(requestid, self.customerid)
+            messagebox.showinfo("showinfo", mess)
+        except:
+            messagebox.showinfo("showinfo", "There is somthing wrong with your input, please check again!")
         
 
     def refresh(self):
